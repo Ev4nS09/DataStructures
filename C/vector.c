@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define INITIAL_CAPACITY 16
+
 typedef struct Vector
 {
   void** array;
@@ -15,11 +17,11 @@ void free_array(void** array, int size, void (*free_value)(void*))
     free_value(array[i]);
 }
 
-Vector* init_empty_vector(void (*free_value)(void*))
+Vector* vector_empty_init(void (*free_value)(void*))
 {
-  Vector* result = malloc(sizeof(Vector));
+  Vector* result = calloc(INITIAL_CAPACITY, sizeof(Vector));
 
-  result->array = malloc(sizeof(void));
+  result->array = malloc(sizeof(void*));
   result->capacity = 0;
   result->size = 0;
   result->free_value = free_value;
@@ -27,11 +29,11 @@ Vector* init_empty_vector(void (*free_value)(void*))
   return result;
 }
 
-Vector* init_vector(int initial_capacity, void (*free_value)(void*))
+Vector* vector_init(int initial_capacity, void (*free_value)(void*))
 {
   Vector* result = malloc(sizeof(Vector));
 
-  result->array = calloc(initial_capacity, sizeof(void));
+  result->array = calloc(initial_capacity, sizeof(void*));
   result->capacity = initial_capacity;
   result->size = 0;
   result->free_value = free_value;
@@ -39,9 +41,9 @@ Vector* init_vector(int initial_capacity, void (*free_value)(void*))
   return result;
 }
 
-void resize_vector(Vector* vector, int new_capacity)
+void vector_resize(Vector* vector, int new_capacity)
 {
-  void** resized_array = realloc(, sizeof(void));
+  void** resized_array = realloc(vector, new_capacity);
   void** temp_array = vector->array;
 
   vector->array = resized_array;
@@ -51,7 +53,7 @@ void resize_vector(Vector* vector, int new_capacity)
 }
 
 
-void add_vector(Vector* vector, void* value)
+void vector_add(Vector* vector, void* value)
 {
   vector->array[vector->size] = value;
   vector->size = vector->size + 1;
@@ -76,13 +78,13 @@ void free_value(void* integer)
 int main()
 {
   while(1){
-  Vector* vector = init_vector(2, free_value);
+  Vector* vector = vector_init(2, free_value);
   int *n = malloc(sizeof(int));
   *n = 2;
   int *m = malloc(sizeof(int));
   *m = 3;
-  add_vector(vector, n);
-  add_vector(vector, m);
+  vector_add(vector, n);
+  vector_add(vector, m);
 
   free_vector(vector);
   }

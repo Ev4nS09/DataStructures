@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define INITIAL_CAPACITY 16
+
+typedef struct Vector
+{
+  void** array;
+  int capacity;
+  int size;
+  void(*free_value)(void*);
+}Vector;
+
+void free_array(void** array, int size, void (*free_value)(void*))
+{
+  for(int i = 0; i < size; i++)
+    free_value(array[i]);
+}
+
+Vector* vector_empty_init(void (*free_value)(void*))
+{
+  Vector* result = calloc(INITIAL_CAPACITY, sizeof(Vector));
+
+  result->array = malloc(sizeof(void*));
+  result->capacity = 0;
+  result->size = 0;
+  result->free_value = free_value;
+
+  return result;
+}
+
+Vector* vector_init(int initial_capacity, void (*free_value)(void*))
+{
+  Vector* result = malloc(sizeof(Vector));
+  result->array = calloc(initial_capacity, sizeof(void*));
+  result->capacity = initial_capacity;
+  result->size = 0;
+  result->free_value = free_value;
+  
+  return result;
+}
+
+void vector_resize(Vector* vector, int new_capacity)
+{
+  void** resized_array = realloc(vector->array, new_capacity);
+
+  vector->array = resized_array;
+  vector->capacity = new_capacity;
+}
+
+
+void vector_add(Vector* vector, void* value, void*(*copy_value)(void*))
+{
+  vector->array[vector->size] = copy_value(value);
+  //memcpy(vector->array[vector->size], value, sizeof(void*));
+  vector->size = vector->size + 1;
+
+  if(vector->size >= vector->capacity)
+    vector_resize(vector, vector->capacity*2);
+}
+
+void vector_remove(Vector* vector, int index)
+{
+  if(vector->size <= 0 || index < 0 || index >= vector->size)
+    return;
+  void* temp_value = vector->array[index];
+  vector->array[index] = 0;
+  vector->free_value(temp_value);
+
+
+
+  memmove(vector->array[index], vector->array[index+1], (vector->size - (index+1)) * sizeof(void*));
+
+  //for(int i = index; i < vector->size - 1; i++)
+    //vector->array[i] = vector->array[i + 1];
+
+  vector->size = vector->size - 1;
+
+  if(vector->size <= vector->capacity/4)
+    vector_resize(vector, vector->size/2);
+}
+
+
+void free_vector(Vector* vector)
+{
+  free_array(vector->array, vector->size, vector->free_value);
+  free(vector->array);
+  free(vector);
+}
+
+void free_value(void* integer)
+{
+  free((int*) integer);
+}
+
+void* copy_value(void* integer)
+{
+  int* result = malloc(sizeof(int));
+  *result = *(int*) integer;
+
+  return (void*) result;
+}
+
+int main()
+{
+  while(1){
+  Vector* vector = vector_init(20, free_value);
+  int m = 3;
+  int n = 2;
+  vector_add(vector, &m, copy_value);
+  vector_add(vector, &n, copy_value);
+  free_vector(vector);
+  }
+  return 0;
+}

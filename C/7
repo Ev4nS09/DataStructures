@@ -1,0 +1,28 @@
+#include <iostream>
+#include <vector>
+#include <chrono>
+#include <stdio.h>
+
+#define TRIALS 31
+#define VECTOR_SIZE 100000000
+
+auto start = 0;
+auto stop = 0;
+
+int main()
+{
+  
+  for(int i = 0; i < TRIALS; i++)
+  {
+    std::vector<int> vector;
+    start = std::chrono::high_resolution_clock::now();
+    for(int j = 0; j < VECTOR_SIZE; j++)
+    {
+      vector.push_back(i);
+    }
+    stop += (std::chrono::high_resolution_clock::now() - start);
+  } 
+  double casted = std::chrono:duration_cast(stop).count()
+  stop /= TRIALS;
+  printf("%.6lf", (double) stop);
+}

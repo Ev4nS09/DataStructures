@@ -5,7 +5,7 @@
 #include "vector.h"
 
 #define TRIALS 31
-#define VECTOR_SIZE 67108875
+#define VECTOR_SIZE 67108864 
 
 double start_timer = 0;
 double stop_timer = 0;
@@ -31,8 +31,11 @@ void print_int(void* integer)
 
 int main()
 {
-  printf("%lf\n", sizeof(int*));
-  if(1 == 1)
+
+  printf("%d", sizeof(void)); 
+
+
+
   for(int trial = 0; trial < TRIALS; trial++)
   {
     Vector* vector = vector_init(1, free_int);

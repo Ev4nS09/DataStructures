@@ -92,6 +92,7 @@ void vector_set(Vector* vector, void* value, int index)
 
   void* temp_value = vector->array[index];
   vector->array[index] = value;
+
   if(temp_value != (void*) 0)
     vector->free_value(temp_value);
 }

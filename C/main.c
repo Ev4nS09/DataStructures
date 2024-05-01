@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "vector.h"
+#include "linkedlist.h"
 
 #define TRIALS 31
 #define VECTOR_SIZE 67108864 
@@ -31,14 +32,20 @@ void print_int(void* integer)
 
 int main()
 {
-
-  printf("%d", sizeof(void)); 
-
-
+  List* list = list_init(free_int); 
+  
+  for(int i = 0; i < 10; i++)
+  {
+    list_add_last(list, &i, copy_int);
+  }
+  list_remove(list, 4);
+  list_print(list, print_int);
+  list_free(list);
+  exit(0);
 
   for(int trial = 0; trial < TRIALS; trial++)
   {
-    Vector* vector = vector_init(1, free_int);
+    Vector* vector = vector_init(20, free_int);
     start_timer = (double) clock();     
     for(int i = 0; i < VECTOR_SIZE; i++)
       vector_add(vector, &i, copy_int);

@@ -17,8 +17,6 @@
 #include "vector.h"
 #include "generic_type_functions.h"
 
-#define INITIAL_CAPACITY 16
-
 void error_handler(char* message)
 {
   printf("Error: %s\n", message);
@@ -63,6 +61,18 @@ Vector* vector_init(int initial_capacity, void (*free_value)(void*))
   
   return result;
 }
+
+Vector* vector_init_array(void** array, int array_size, Free free_value)
+{
+  Vector* result = malloc(sizeof(Vector));
+  result->array = array;
+  result->size = array_size;
+  result->capacity = array_size * 2;
+  result->free_value = free_value;
+
+  return result;
+}
+
 
 void vector_resize(Vector* vector, int new_capacity)
 {
@@ -130,13 +140,12 @@ void vector_remove_from_to(Vector* vector, int from, int to)
   if(from < 0 || to < 0 || from > vector->size || to > vector-> size)
     error_handler("Invalid range");
 
-  else if(from > to)
+  if(from > to)
   {
     int temp = from;
     from = to;
     to = temp;
   }
-
   else if(from == to)
   {
     vector_remove(vector, from);
@@ -150,8 +159,8 @@ void vector_remove_from_to(Vector* vector, int from, int to)
   
   vector->size = vector->size - (to - from);
   
-  if(vector->size <= vector->capacity/4)
-    vector_resize(vector, vector->capacity/2);
+  if(vector->size <= vector->capacity >> 2)
+    vector_resize(vector, vector->capacity >> 1);
 }
 
 void* vector_get(Vector* vector, int index)
@@ -175,12 +184,9 @@ void vector_set_size(Vector* vector, int new_size)
 
   if(new_size > vector->size)
   {
-    int i = vector->size;
-    for(; i < new_size; i++)
-    {
+    for(int i = vector->size; i < new_size; i++)
       vector_add(vector, (void*) 0, return_null_pointer);
-    }
-  }
+  } 
   else if(new_size < vector->size)
   {
     vector_remove_from_to(vector, new_size, vector->size);

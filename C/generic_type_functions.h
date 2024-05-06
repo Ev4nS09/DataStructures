@@ -4,6 +4,7 @@
 typedef void (*Free)(void*);
 typedef void* (*Copy)(void*);
 typedef void (*Print)(void*);
+typedef int (*Compare)(void*, void*);
 
 #endif // !
 

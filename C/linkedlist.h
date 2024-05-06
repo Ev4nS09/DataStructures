@@ -53,6 +53,7 @@ void list_remove_first(List* list);
 
 void list_remove(List* list, int index);
 
+void list_remove_all_value(List* list, void* value, Compare cmp);
 
 /*
     Prints a list

@@ -78,26 +78,49 @@ void list_remove_first(List* list)
     list->size = list->size - 1;
 }
 
-void list_remove(List* list, int index) 
+void list_remove_next_node(List* list, Node* node)
 {
-    if(index == 0)
+    if(node == list->first)
     {
         list_remove_first(list);
         return;
     }
 
-    Node* current_node = list->first;
-    while(index-- != 1)
-        current_node = current_node->next;
-
-    Node* temp_node = current_node->next;
-    current_node->next = current_node->next->next;
+    Node* temp_node = node->next;
+    node->next = node->next->next;
     list->free_value(temp_node->value);
     free(temp_node);
 
     list->size = list->size - 1;
 }
 
+void list_remove(List* list, int index) 
+{
+    Node* current_node = list->first;
+    while(index-- > 1)
+        current_node = current_node->next;
+
+    list_remove_next_node(list, current_node);
+
+}
+
+void list_remove_all_value(List* list, void* value, Compare cmp)
+{
+    Node* current_node = list->first;
+
+    while(cmp(current_node->value, value) == 1)
+    {
+        current_node = current_node->next;    
+        list_remove_first(list);
+    }
+
+    while(current_node->next != NULL) 
+    {
+        if(cmp(current_node->next->value, value))
+            list_remove_next_node(list, current_node);
+    
+    }
+}
 
 void list_print(List* list, Print print_value)
 {

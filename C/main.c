@@ -30,6 +30,11 @@ void print_int(void* integer)
   printf("%d", *(int*)integer);
 }
 
+int cmp_int(void* value1, void* value2)
+{
+  return *(int*) value1 == *(int*) value2 ? 1 : 0;
+}
+
 int main()
 {
   List* list = list_init(free_int); 
@@ -38,7 +43,11 @@ int main()
   {
     list_add_last(list, &i, copy_int);
   }
-  list_remove(list, 4);
+  int* a = malloc(sizeof(int));
+  *a = 5;
+  int* b = malloc(sizeof(int));
+  *b = 3;
+  list_remove_all_value(list, cmp_int, (void*) a);
   list_print(list, print_int);
   list_free(list);
   exit(0);

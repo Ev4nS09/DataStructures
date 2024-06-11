@@ -68,6 +68,47 @@ void list_add_last(List* list, void* value, Copy copy_value)
     list->size = list->size + 1;
 }
 
+void list_add_at(List* list, void* value, int index, Copy copy_value)
+{
+  if(index == 0)
+  {
+    list_add(list, value, copy_value);
+    return;
+  }
+  else if(index == list->size)
+  {
+    list_add_last(list, value, copy_value);
+    return;
+  }
+
+  Node* current_node = list->first;
+
+  while(index-- != 1)
+   current_node = current_node->next; 
+
+  current_node->next = node_init(current_node->next, copy_value(value));
+  list->size = list->size + 1;
+}
+
+void list_add_cmp(List* list, void* value, Compare cmp, Copy copy_value)
+{
+  Node* current_node = list->first;
+  
+  while(current_node->next != NULL && !cmp(current_node->next->value, value))
+    current_node = current_node->next;
+
+  if(current_node == list->first)
+    list_add(list, value, copy_value);
+  else if(current_node == NULL)
+    list_add_last(list, value, copy_value);
+  else 
+  {
+    current_node->next = node_init(current_node->next, copy_value(value));
+    list->size = list->size + 1;
+  }
+
+}
+
 void list_remove_first(List* list)
 {
     Node* temp_node = list->first;
@@ -80,12 +121,6 @@ void list_remove_first(List* list)
 
 void list_remove_next_node(List* list, Node* node)
 {
-    if(node == list->first)
-    {
-        list_remove_first(list);
-        return;
-    }
-
     Node* temp_node = node->next;
     node->next = node->next->next;
     list->free_value(temp_node->value);
@@ -96,6 +131,10 @@ void list_remove_next_node(List* list, Node* node)
 
 void list_remove(List* list, int index) 
 {
+    if(index == 0 || list->size == 1)
+      list_remove_first(list);
+      
+    
     Node* current_node = list->first;
     while(index-- > 1)
         current_node = current_node->next;
@@ -108,19 +147,117 @@ void list_remove_all_value(List* list, void* value, Compare cmp)
 {
     Node* current_node = list->first;
 
-    while(cmp(current_node->value, value) == 1)
+    while(current_node != NULL && cmp(current_node->value, value))
     {
         current_node = current_node->next;    
         list_remove_first(list);
     }
 
-    while(current_node->next != NULL) 
+    while(current_node != NULL && current_node->next != NULL) 
     {
         if(cmp(current_node->next->value, value))
             list_remove_next_node(list, current_node);
-    
+        else 
+          current_node = current_node->next;
     }
 }
+
+void* list_get_first(List* list, Copy copy_value)
+{
+  return copy_value(list->first->value);
+}
+
+void* list_get_last(List* list, Copy copy_value)
+{
+  return copy_value(list->last->value);
+}
+
+void* list_get_at(List* list, int index, Copy copy_value)
+{
+  if(index == 0)
+    return list_get_first(list, copy_value);
+  else if(index == list->size - 1)
+    return list_get_last(list, copy_value);
+
+  Node* current_node = list->first;
+
+  while(index-- != 0)
+    current_node = current_node->next;
+
+  return copy_value(current_node->value);
+    
+}
+
+int list_contains_value(List* list, void* value, Compare cmp)
+{
+  int result = 0;
+  Node* current_node = list->first;
+
+  while(current_node != NULL)
+  {
+    if(cmp(current_node->value, value))
+    {
+      result = 1;
+      break;
+    }
+    
+    current_node = current_node->next;
+  }
+
+  return result;
+}
+
+void swap_node_values(Node* node1, Node* node2)
+{
+  void* value = node1->value;
+  node1->value = node2->value;
+  node2->value = value;
+}
+
+void list_insertion_sort(List* list, Compare cmp)
+{
+  Node* current_node_i = list->first;
+  Node* current_node_j = list->first->next;
+
+  for(int i = 0; i < list->size - 1; i++)
+  {
+    for(int j = i+1; j < list->size; j++)
+    {
+      if(cmp(current_node_i->value, current_node_j->value)) 
+        swap_node_values(current_node_i, current_node_j);
+
+      current_node_j = current_node_j->next;
+    }
+
+    current_node_i = current_node_i->next;
+    current_node_j = current_node_i->next;
+  }
+}
+
+int list_to_array(List* list, void** array, Copy copy_value)
+{
+  int result = 0;
+  Node* current_node = list->first;
+
+  for(int i = 0; i < list->size; i++)
+  {
+    array[result++] = copy_value(current_node->value);
+    current_node = current_node->next;
+  }
+
+  return result;
+}
+
+List* list_array_to_list(void** array, int array_size, Free free, Copy copy_value) 
+{
+  List* result = list_init(free);
+
+  for(int i = 0; i < array_size; i++)
+    list_add_last(result, array[i], copy_value);
+
+  return result;
+}
+
 
 void list_print(List* list, Print print_value)
 {

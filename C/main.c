@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "vector.h"
 #include "linkedlist.h"
-
-#define TRIALS 31
-#define VECTOR_SIZE 67108864 
-
-double start_timer = 0;
-double stop_timer = 0;
-double final_time = 0;
+#include "queue.h"
+#include "stack.h"
 
 void free_int(void* integer)
 {
@@ -32,41 +26,35 @@ void print_int(void* integer)
 
 int cmp_int(void* value1, void* value2)
 {
-  return *(int*) value1 == *(int*) value2 ? 1 : 0;
+  return *(int*) value1 == *(int*) value2;
+}
+
+int cmp_less(void* value1, void* value2)
+{
+  return *(int*) value1 > *(int*) value2;
 }
 
 int main()
 {
-  List* list = list_init(free_int); 
-  
+  Queue* queue = queue_init(free_int);
+  Stack* stack = stack_init(free_int);
+
   for(int i = 0; i < 10; i++)
   {
-    list_add_last(list, &i, copy_int);
-  }
-  int* a = malloc(sizeof(int));
-  *a = 5;
-  int* b = malloc(sizeof(int));
-  *b = 3;
-  list_remove_all_value(list, cmp_int, (void*) a);
-  list_print(list, print_int);
-  list_free(list);
-  exit(0);
-
-  for(int trial = 0; trial < TRIALS; trial++)
-  {
-    Vector* vector = vector_init(20, free_int);
-    start_timer = (double) clock();     
-    for(int i = 0; i < VECTOR_SIZE; i++)
-      vector_add(vector, &i, copy_int);
-    stop_timer = (double) clock();
-    final_time += stop_timer / CLOCKS_PER_SEC - start_timer / CLOCKS_PER_SEC; 
-    free_vector(vector);
+    queue_enqueue(queue, &i, copy_int);
+    stack_push(stack, &i, copy_int);
   }
 
-  final_time = final_time / TRIALS; 
+  queue_dequeue(queue, copy_int);
+  stack_pop(stack, copy_int);
 
-  printf("Time for %d vector additions: %.6lf\n", VECTOR_SIZE, final_time);
+  printf("%d ", *(int*)queue_peek(queue, copy_int));
+  printf("%d\n", *(int*)stack_peek(stack, copy_int));
+  
 
+  queue_print(queue, print_int);
+  stack_print(stack, print_int);
 
-  return 0;
+  queue_free(queue);
+  stack_free(stack);
 }

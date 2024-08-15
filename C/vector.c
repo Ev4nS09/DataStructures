@@ -171,6 +171,14 @@ void* vector_get(Vector* vector, int index)
   return vector->array[index];
 }
 
+void* vector_get_remove(Vector* vector, int index, Copy copy_value)
+{
+  void* result = copy_value(vector->array[index]);
+  vector_remove(vector, index);
+
+  return result;
+}
+
 //This fucntion is private 
 void* return_null_pointer(void* p)
 {

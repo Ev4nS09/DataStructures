@@ -79,6 +79,7 @@ void vector_remove_from_to(Vector* vector, int from, int to);
 */
 void* vector_get(Vector* vector, int index);
 
+void* vector_get_remove(Vector* vector, int index, Copy copy_value);
 /*
   Sets the size of the array to the given one. If the the new size is less than the previous one 
   the values that "overflow" the vector with the new size will be freed. If the size is bigger than the previous

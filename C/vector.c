@@ -153,7 +153,7 @@ void vector_remove_from_to(Vector* vector, int from, int to)
   }
 
   for(int i = from; i < to; i++)
-    vector_set(vector, 0, i);
+    vector_set(vector, NULL, i);
 
   memmove(vector->array + from, vector->array + to, (vector->size - (to)) * sizeof(void*));
   
@@ -163,12 +163,12 @@ void vector_remove_from_to(Vector* vector, int from, int to)
     vector_resize(vector, vector->capacity >> 1);
 }
 
-void* vector_get(Vector* vector, int index)
+void* vector_get(Vector* vector, int index, Copy copy_value)
 {
   if(index < 0 || index >= vector->size)
     error_handler("Index out of bounds");
 
-  return vector->array[index];
+  return copy_value(vector->array[index]);
 }
 
 void* vector_get_remove(Vector* vector, int index, Copy copy_value)

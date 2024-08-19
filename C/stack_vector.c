@@ -18,7 +18,7 @@ void stack_vector_push(StackVector* stack_vector, void* value, Copy copy_value)
 
 void* stack_vector_peek(StackVector* stack_vector, Copy copy_value)
 {
-    return copy_value(vector_get(stack_vector->vector, stack_vector->vector->size - 1)); 
+    return vector_get(stack_vector->vector, stack_vector->vector->size - 1, copy_value); 
 }
 
 void* stack_vector_pop(StackVector* stack_vector, Copy copy_value)

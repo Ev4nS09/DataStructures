@@ -77,7 +77,7 @@ void vector_remove_from_to(Vector* vector, int from, int to);
 /*
   Return the value at the position given from the vector
 */
-void* vector_get(Vector* vector, int index);
+void* vector_get(Vector* vector, int index, Copy copy_value);
 
 void* vector_get_remove(Vector* vector, int index, Copy copy_value);
 /*

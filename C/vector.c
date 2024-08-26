@@ -29,7 +29,7 @@ void free_array(void** array, int size, void (*free_value)(void*))
     free_value(array[i]);
 }
 
-void free_vector(Vector* vector)
+void vector_free(Vector* vector)
 {
   free_array(vector->array, vector->size, vector->free_value);
   free(vector->array);
@@ -96,6 +96,13 @@ void vector_add(Vector* vector, void* value, void*(*copy_value)(void*))
 }
 
 void vector_add_no_copy(Vector* vector, void* value)
+{
+  vector->array[vector->size] = value;
+  vector->size = vector->size + 1;
+
+  if(vector->size >= vector->capacity)
+    vector_resize(vector, vector->capacity << 1);
+}
 
 void vector_set(Vector* vector, void* value, int index)
 {

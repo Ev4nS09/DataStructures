@@ -46,13 +46,15 @@ Vector* vector_init(int initial_capacity, Free free_value);
 /*
   Frees a vector given by it's user. The function iterates the array and frees every value from it using the function
 */
-void free_vector(Vector* vector);
+void vector_free(Vector* vector);
 
 /*
   Adds an element to the vector, if the the size of the vector equals the capicity than we need to resize the array.
   We use the function resize and give the new capicty the following argument, vector->capacity * 2.
 */
 void vector_add(Vector* vector, void* value, Copy copy_value);
+
+void vector_add_no_copy(Vector* vector, void* value);
 
 /*
   Sets a value from the array for another one at a given index

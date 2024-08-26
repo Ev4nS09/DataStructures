@@ -14,17 +14,6 @@ typedef struct Pair
     Type value_type;
 }Pair;
 
-Pair* pair_init(void* key, void* value, Type* key_type, Type* value_type)
-{
-  Pair* pair = malloc(sizeof(Pair));
-  pair->key = key;
-  pair->value = value;
-  pair->key_type = key_type;
-  pair->value_type = value_type;
-
-  return pair;
-}
-
 typedef struct HashMap
 {
     Vector** buckets;
@@ -36,7 +25,11 @@ typedef struct HashMap
     Type value_type;
 }HashMap;
 
-HashMap* hash_map_init(Type* key_type, Type* value_type, Hash hash); 
+HashMap* hash_map_init(Type key_type, Type value_type, Hash hash); 
+
+void hash_map_put(HashMap* hash_map, void* key, void* value);
+
+void hash_map_free(HashMap* hash_map);
 
 #endif
 

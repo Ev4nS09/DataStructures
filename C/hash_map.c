@@ -45,11 +45,51 @@ HashMap* hash_map_init(Type* key_type, Type* value_type, Hash hash)
   result->buckets = calloc(PRIMES[0], sizeof(Vector));
   result->hash = hash;
   result->size = 0;
+  result->number_of_elemnts = 0;
   result->prime_index = 0; 
   result->key_type = key_type;
   result->value_type = value_type;
 
   return result;
+}
+
+void free_buckets(Vector** buckets, int size)
+{
+  for(int i = 0; i < size, i++)
+    vector_free(buckets[i]);
+ 
+  free(buckets);
+}
+
+void hash_map_resize(HashMap* hash_map)
+{
+  if(PRIMES[hash_map->prime_index] == hash_map->size && hash_map->prime_index < 24)
+    hash_map->prime_index = hash_map->prime_index + 1;
+  else if(PRIMES[hash_map->prime_index] >> 2 <= hash_map->size && hash_map->prime_index > 0)
+    hash_map->prime_index = hash_map->prime_index - 1;
+  else 
+    return;
+
+  Vector** resized_buckets = calloc(PRIMES[hash_map->prime_index], sizeof(Vector)); 
+  
+  for(int i = 0; i < hash_map->size, i++)
+  {
+    if(hash_map->buckets[i] == NULL)
+      continue;
+
+    Vector* current_bucket = hash_map->buckets[i];
+
+    for(int j = 0; j < hash_map->buckets[i]->size; i++)
+    {
+      int new_position = hash_map->hash(vector_get(current_bucket, j) % PRIMES[hash_map->prime_index];
+
+      if(resized_buckets[new_position] == NULL)
+        resized_buckets[new_position] = vector_empty_init(pair_free);
+        
+      vector_add(resized_buckets[new_position], vector_get(current_bucket, pair_copy), ; 
+    } 
+  }
+
 }
 
 HashMap* hash_map_put(HashMap* hash_map, void* key, void* value)
@@ -66,6 +106,8 @@ HashMap* hash_map_put(HashMap* hash_map, void* key, void* value)
   Pair* pair = pair_init(key, value, hash_map->key_type, hash_map->value_type);
   vector_add(hash_map->buckets[index], pair, pair_copy);
   pair_free(pair);
+
+  hash_map->number_of_elemnts = hash_map->number_of_elemnts + 1;
 }
 
 

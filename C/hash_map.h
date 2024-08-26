@@ -30,7 +30,8 @@ typedef struct HashMap
     Vector** buckets;
     Hash hash;
     int size;
-    int capacity;
+    int number_of_elements;
+    int prime_index;
     Type key_type;
     Type value_type;
 }HashMap;

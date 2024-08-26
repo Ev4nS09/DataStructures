@@ -95,6 +95,8 @@ void vector_add(Vector* vector, void* value, void*(*copy_value)(void*))
     vector_resize(vector, vector->capacity << 1);
 }
 
+void vector_add_no_copy(Vector* vector, void* value)
+
 void vector_set(Vector* vector, void* value, int index)
 {
  if(index < 0 || index >= vector->size)

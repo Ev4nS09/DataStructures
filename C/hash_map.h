@@ -6,6 +6,8 @@
 
 typedef int (*Hash)(void*);
 
+typedef int gint;
+
 typedef struct Pair
 {
     void* key;

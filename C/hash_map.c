@@ -70,26 +70,24 @@ void free_buckets(Vector** buckets, int size)
   for(int i = 0; i < size; i++)
   {
     if(buckets[i] != NULL)
-    {
       vector_free(buckets[i]);
-    }
   }
  
   free(buckets);
 }
 
-void hash_map_resize(HashMap* hash_map)
+void hash_map_resize(HashMap* hash_map, int size)
 {
   Vector** resized_buckets = calloc(PRIMES[hash_map->prime_index], sizeof(Vector)); 
   
-  for(int i = 0; i < hash_map->size; i++)
+  for(int i = 0; i < size; i++)
   {
     if(hash_map->buckets[i] == NULL)
       continue;
 
     Vector* current_bucket = hash_map->buckets[i];
 
-    for(int j = 0; j < hash_map->buckets[i]->size; i++)
+    for(int j = 0; j < hash_map->buckets[i]->size; j++)
     {
       Pair* pair = (Pair*) vector_get(current_bucket, j, pair_copy);
       int new_position = hash_map->hash(pair->key) % PRIMES[hash_map->prime_index];
@@ -121,10 +119,76 @@ void hash_map_put(HashMap* hash_map, void* key, void* value)
   if(hash_map->size == PRIMES[hash_map->prime_index] && hash_map->prime_index < 24)
   {
     hash_map->prime_index = hash_map->prime_index + 1;
-    hash_map_resize(hash_map);
+    hash_map_resize(hash_map, PRIMES[hash_map->prime_index]);
   }
 
   hash_map->number_of_elements = hash_map->number_of_elements + 1;
+}
+
+int hash_map_contains_key(HashMap* hash_map, void* key)
+{
+  return hash_map->buckets[hash_map->hash(key)] != NULL;
+}
+
+int hash_map_contains_value(HashMap* hash_map, void* value)
+{
+  for(int i = 0; i < PRIMES[hash_map->prime_index]; i++)
+    if(hash_map->buckets[i] != NULL)
+      for(int j = 0; j < hash_map->buckets[i]->size; j++)
+        if(hash_map->value_type.compare_value(hash_map->buckets[i]->array[j], value))
+          return 1;
+
+  return 0;
+}
+
+int hash_map_contains_pair(HashMap* hash_map, void* key, void* value)
+{
+  if(hash_map->buckets[hash_map->hash(key)] == NULL)
+    return 0;
+
+  Pair* pair = pair_init(hash_map->key_type.copy_value(key), hash_map->value_type.copy_value(value), hash_map->key_type, hash_map->value_type);
+
+  for(int i = 0; i < hash_map->buckets[hash_map->hash(key)]->size; i++)
+  {
+    if(pair_cmp(hash_map->buckets[hash_map->hash(key)]->array[i], pair))
+    {
+      pair_free(pair);
+      return 1;
+    }
+  }
+
+  pair_free(pair);
+  return 0;
+}
+
+void hash_map_delete(HashMap* hash_map, void* key, void* value)
+{
+  if(hash_map->buckets[hash_map->hash(key)] == NULL)
+    return;
+
+  for(int i = 0; i < hash_map->buckets[hash_map->hash(key)]->size; i++)
+  {
+    if(hash_map->value_type.compare_value(((Pair*)hash_map->buckets[hash_map->hash(key)]->array[i])->value, value))
+    {
+      vector_remove(hash_map->buckets[hash_map->hash(key)], i);
+      if(hash_map->buckets[hash_map->hash(key)]->size == 0)
+      {
+        vector_free(hash_map->buckets[hash_map->hash(key)]);  
+        hash_map->size = hash_map->size - 1;
+      }
+      hash_map->number_of_elements = hash_map->number_of_elements - 1;
+
+      break;
+    }
+
+  }
+
+  if(hash_map->size <= PRIMES[hash_map->prime_index] >> 2 && hash_map->prime_index > 0)
+  {
+    hash_map->prime_index = hash_map->prime_index - 1;
+    hash_map_resize(hash_map, PRIMES[hash_map->prime_index]);
+  }
+
 }
 
 void hash_map_free(HashMap* hash_map)

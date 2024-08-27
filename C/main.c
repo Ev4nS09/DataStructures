@@ -47,18 +47,18 @@ int hash_int(void* key)
 
 int main()
 {
-  while(1){
   Type type_int = type_init(free_int, copy_int, cmp_int);
 
   HashMap* hash_map = hash_map_init(type_int, type_int, hash_int);
 
-  for(int i = 0; i < 12; i++)
+  for(int i = 0; i < 13; i++)
   {
     hash_map_put(hash_map, &i, &i);
   }
 
   hash_map_free(hash_map);
-  }
+
+  gint x = 2;
 
   return 0;
 }

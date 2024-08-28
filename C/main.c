@@ -11,6 +11,8 @@
 #include "generic_type_functions.h"
 #include "hash_map.h"
 
+#define MAX_UNSIGNED_INT 4294967295
+
 void free_int(void* integer)
 {
   free((int*)integer);
@@ -47,18 +49,13 @@ int hash_int(void* key)
 
 int main()
 {
-  Type type_int = type_init(free_int, copy_int, cmp_int);
+  void* x = malloc(sizeof(void));
 
-  HashMap* hash_map = hash_map_init(type_int, type_int, hash_int);
+  unsigned int y =  (unsigned int) (((long long) x) % MAX_UNSIGNED_INT) & 0x7FFFFFF;
 
-  for(int i = 0; i < 13; i++)
-  {
-    hash_map_put(hash_map, &i, &i);
-  }
+  printf("%d\n", y);
 
-  hash_map_free(hash_map);
-
-  gint x = 2;
+  free(x);
 
   return 0;
 }

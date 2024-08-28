@@ -5,9 +5,12 @@
 #include "vector.h"
 #include "generic_type_functions.h"
 
+#define MAX_UNSIGNED_INT 4294967295
+
 const int PRIMES[24] = {13, 29, 53, 101, 233, 463,
                                911, 2069, 4861, 11551, 23197, 41947, 88513, 207443, 408091, 
                               808237, 2008439, 5009497, 10009729, 40010239, 90020881, 400022659, 800022131, 2147483647}; 
+
 
 void pair_free(void* pair)
 {
@@ -162,7 +165,9 @@ int hash_map_contains_pair(HashMap* hash_map, void* key, void* value)
 }
 
 void hash_map_delete(HashMap* hash_map, void* key, void* value)
-{
+{  
+  int index = hash_map->hash(key) % PRIMES[hash_map->prime_index];
+  
   if(hash_map->buckets[hash_map->hash(key)] == NULL)
     return;
 

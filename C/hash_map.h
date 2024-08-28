@@ -4,9 +4,7 @@
 #include "generic_type_functions.h"
 #include "vector.h"
 
-typedef int (*Hash)(void*);
-
-typedef int gint;
+typedef unsigned int (*Hash)(void*);
 
 typedef struct Pair
 {

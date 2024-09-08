@@ -17,11 +17,6 @@
 #include "vector.h"
 #include "generic_type_functions.h"
 
-void error_handler(char* message)
-{
-  printf("Error: %s\n", message);
-  exit(1);
-}
 
 void free_array(void** array, int size, void (*free_value)(void*))
 {
@@ -36,7 +31,7 @@ void vector_free(Vector* vector)
   free(vector);
 }
 
-Vector* vector_empty_init(void (*free_value)(void*))
+Vector* vector_empty_init(Free free_value)
 {
   Vector* result = malloc(sizeof(Vector));
 
@@ -51,7 +46,7 @@ Vector* vector_empty_init(void (*free_value)(void*))
 Vector* vector_init(int initial_capacity, void (*free_value)(void*))
 {
   if(initial_capacity < 0)
-    error_handler("Invalid capicity");
+   return NULL; 
 
   Vector* result = malloc(sizeof(Vector));
   result->array = calloc(initial_capacity, sizeof(void*));
@@ -74,15 +69,17 @@ Vector* vector_init_array(void** array, int array_size, Free free_value)
 }
 
 
-void vector_resize(Vector* vector, int new_capacity)
+int vector_resize(Vector* vector, int new_capacity)
 {
   if(new_capacity < vector->size)
-    error_handler("New capacity out of bounds");
+    return 1;
 
   void** resized_array = realloc(vector->array, new_capacity * sizeof(void*));
 
   vector->array = resized_array;
   vector->capacity = new_capacity;
+
+  return 0; 
 }
 
 
@@ -104,22 +101,24 @@ void vector_add_no_copy(Vector* vector, void* value)
     vector_resize(vector, vector->capacity << 1);
 }
 
-void vector_set(Vector* vector, void* value, int index)
+int vector_set(Vector* vector, void* value, int index)
 {
  if(index < 0 || index >= vector->size)
-    error_handler("Index out of bounds");
+    return 1; 
 
   void* temp_value = vector->array[index];
   vector->array[index] = value;
 
   if(temp_value != (void*) 0)
     vector->free_value(temp_value);
+
+  return 0;
 }
 
-void vector_add_at(Vector* vector, void* value, int index, void*(*copy_value)(void*))
+int vector_add_at(Vector* vector, void* value, int index, Copy copy_value)
 {
   if(index < 0)
-    error_handler("Index out of bounds");
+   return 1; 
 
   if(index >= vector->size)
     vector_set_size(vector, index);
@@ -131,6 +130,7 @@ void vector_add_at(Vector* vector, void* value, int index, void*(*copy_value)(vo
   if(vector->size >= vector->capacity)
     vector_resize(vector, vector->capacity * 2);
 
+  return 0;
 }
 
 void vector_remove(Vector* vector, int index)
@@ -144,10 +144,10 @@ void vector_remove(Vector* vector, int index)
     vector_resize(vector, vector->capacity >> 1);
 }
 
-void vector_remove_from_to(Vector* vector, int from, int to)
+int vector_remove_from_to(Vector* vector, int from, int to)
 {
   if(from < 0 || to < 0 || from > vector->size || to > vector-> size)
-    error_handler("Invalid range");
+    return 1;
 
   if(from > to)
   {
@@ -158,7 +158,7 @@ void vector_remove_from_to(Vector* vector, int from, int to)
   else if(from == to)
   {
     vector_remove(vector, from);
-    return;
+    return 0;
   }
 
   for(int i = from; i < to; i++)
@@ -170,12 +170,14 @@ void vector_remove_from_to(Vector* vector, int from, int to)
   
   if(vector->size <= vector->capacity >> 2)
     vector_resize(vector, vector->capacity >> 1);
+
+  return 0;
 }
 
 void* vector_get(Vector* vector, int index, Copy copy_value)
 {
   if(index < 0 || index >= vector->size)
-    error_handler("Index out of bounds");
+    return NULL;
 
   return copy_value(vector->array[index]);
 }
@@ -194,10 +196,10 @@ void* return_null_pointer(void* p)
   return (void*) 0;
 }
 
-void vector_set_size(Vector* vector, int new_size)
+int vector_set_size(Vector* vector, int new_size)
 {
   if(new_size < 0)
-    error_handler("Invalid size, the new size must be greater than 0");
+    return 1;
 
   if(new_size > vector->size)
   {
@@ -209,6 +211,8 @@ void vector_set_size(Vector* vector, int new_size)
     vector_remove_from_to(vector, new_size, vector->size);
     vector->size = new_size;
   }
+
+  return 0;
 }
 
 void vector_print(Vector* vector, void(*print)(void*))

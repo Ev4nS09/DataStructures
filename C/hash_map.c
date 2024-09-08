@@ -17,7 +17,7 @@ void pair_free(void* pair)
   ((Pair*)pair)->key_type.free_value(((Pair*)pair)->key);
   ((Pair*)pair)->value_type.free_value(((Pair*)pair)->value);
   free(pair);
-} 
+}
 
 void* pair_copy(void* void_pair)
 {

@@ -59,12 +59,12 @@ void vector_add_no_copy(Vector* vector, void* value);
 /*
   Sets a value from the array for another one at a given index
 */
-void vector_set(Vector* vector, void* value, int index);
+int vector_set(Vector* vector, void* value, int index);
 
 /*
 Adds an element to a vector like the fucntion 'vector_add' at a given position
 */
-void vector_add_at(Vector* vector, void* value, int index, Copy copy_value);
+int vector_add_at(Vector* vector, void* value, int index, Copy copy_value);
 
 /*
   Removes an element from the vector at a given position, and it frees the value that was stored
@@ -74,7 +74,7 @@ void vector_remove(Vector* vector, int index);
 /*
   Remes a chunk of elements from the vector.
 */
-void vector_remove_from_to(Vector* vector, int from, int to);
+int vector_remove_from_to(Vector* vector, int from, int to);
 
 /*
   Return the value at the position given from the vector
@@ -87,7 +87,7 @@ void* vector_get_remove(Vector* vector, int index, Copy copy_value);
   the values that "overflow" the vector with the new size will be freed. If the size is bigger than the previous
   size then the values that would be empty will be set to null.
 */
-void vector_set_size(Vector* vector, int new_size);
+int vector_set_size(Vector* vector, int new_size);
 
 /*
   Prints a given vector

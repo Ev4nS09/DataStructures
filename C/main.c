@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <errno.h>
 
 #include "vector.h"
 #include "linkedlist.h"
@@ -9,7 +10,6 @@
 #include "stack_vector.h"
 #include "queue_vector.h"
 #include "generic_type_functions.h"
-#include "hash_map.h"
 
 #define MAX_UNSIGNED_INT 4294967295
 
@@ -20,6 +20,9 @@ void free_int(void* integer)
 
 void* copy_int(void* integer)
 {
+  if(integer == (void*) 0)
+    return NULL;
+
   int* result = malloc(sizeof(int));
   *result = *(int*)integer;
 
@@ -46,16 +49,26 @@ int hash_int(void* key)
   return (*(int*)key) & 0x7FFFFFFF;
 }
 
-
 int main()
 {
-  void* x = malloc(sizeof(void));
+    Vector* v = vector_init_empty(free_int);
+    for(int i = 0; i < 15; i++)
+        vector_add(v, &i, copy_int);
 
-  unsigned int y =  (unsigned int) (((long long) x) % MAX_UNSIGNED_INT) & 0x7FFFFFF;
 
-  printf("%d\n", y);
+    Vector* copy_v = vector_copy(v, copy_int);
 
-  free(x);
+    int x = 2;
+    vector_set(v, &x, 0, copy_int);
 
-  return 0;
+    vector_remove_from_to(v, 3, 7);
+
+    vector_print(v, print_int);
+    vector_print(copy_v, print_int);
+
+
+    vector_free(v); 
+    vector_free(copy_v);
+
+    return 0;
 }

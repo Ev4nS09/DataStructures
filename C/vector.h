@@ -3,7 +3,7 @@
 
 #include "generic_type_functions.h"
 
-#define INITIAL_CAPACITY 16
+#define DEFAULT_CAPACITY 16
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.
@@ -31,7 +31,7 @@ typedef struct Vector
   Size: is set to 0
   Free: fucntion pointer to free the values that are going to be stored in the array
 */
-Vector* vector_empty_init(Free free_value);
+Vector* vector_init_empty(Free free_value);
 
 /*
   Initializes a vector with an initial capicity given by the user.
@@ -43,6 +43,8 @@ Vector* vector_empty_init(Free free_value);
 */
 Vector* vector_init(int initial_capacity, Free free_value);
 
+Vector* vector_copy(Vector* vector, Copy copy_value);
+
 /*
   Frees a vector given by it's user. The function iterates the array and frees every value from it using the function
 */
@@ -52,14 +54,12 @@ void vector_free(Vector* vector);
   Adds an element to the vector, if the the size of the vector equals the capicity than we need to resize the array.
   We use the function resize and give the new capicty the following argument, vector->capacity * 2.
 */
-void vector_add(Vector* vector, void* value, Copy copy_value);
-
-void vector_add_no_copy(Vector* vector, void* value);
+int vector_add(Vector* vector, void* value, Copy copy_value);
 
 /*
   Sets a value from the array for another one at a given index
 */
-int vector_set(Vector* vector, void* value, int index);
+int vector_set(Vector* vector, void* value, int index, Copy copy_value);
 
 /*
 Adds an element to a vector like the fucntion 'vector_add' at a given position
@@ -69,10 +69,10 @@ int vector_add_at(Vector* vector, void* value, int index, Copy copy_value);
 /*
   Removes an element from the vector at a given position, and it frees the value that was stored
 */
-void vector_remove(Vector* vector, int index);
+int vector_remove(Vector* vector, int index);
 
 /*
-  Remes a chunk of elements from the vector.
+  Removes a chunk of elements from the vector.
 */
 int vector_remove_from_to(Vector* vector, int from, int to);
 
@@ -82,6 +82,7 @@ int vector_remove_from_to(Vector* vector, int from, int to);
 void* vector_get(Vector* vector, int index, Copy copy_value);
 
 void* vector_get_remove(Vector* vector, int index, Copy copy_value);
+
 /*
   Sets the size of the array to the given one. If the the new size is less than the previous one 
   the values that "overflow" the vector with the new size will be freed. If the size is bigger than the previous

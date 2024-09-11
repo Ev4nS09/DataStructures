@@ -1,4 +1,4 @@
-#ifndef vectorv_int_h
+#ifndef vector_int_h
 #define vector_int_h
 
 typedef struct Vector_int

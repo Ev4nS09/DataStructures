@@ -50,6 +50,8 @@ Vector* vector_copy(Vector* vector, Copy copy_value);
 */
 void vector_free(Vector* vector);
 
+int vector_resize(Vector* vector, int new_capacity);
+
 /*
   Adds an element to the vector, if the the size of the vector equals the capicity than we need to resize the array.
   We use the function resize and give the new capicty the following argument, vector->capacity * 2.

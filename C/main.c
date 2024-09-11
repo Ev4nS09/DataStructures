@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <assert.h>
+#include <features.h>
+#include <signal.h>
 #include <errno.h>
 
 #include "vector.h"
@@ -12,6 +15,23 @@
 #include "generic_type_functions.h"
 
 #define MAX_UNSIGNED_INT 4294967295
+#define BOLD_ON  "\e[1m"
+#define BOLD_OFF "\e[m"
+#define RED_ON "\033[31m"
+
+void sighandler(int);
+
+void _assert(int expr, int line, const char* function)
+{
+    if(expr)
+    {
+        printf(RED_ON "Failed Test in line " BOLD_ON "%d" BOLD_OFF RED_ON " and function " BOLD_ON "%s()" BOLD_OFF "\n", line, function);
+        exit(1);
+    }
+}
+
+#define ASSERT(expr) (_assert(expr ? 0 : 1, __LINE__, __func__))
+
 
 void free_int(void* integer)
 {
@@ -49,6 +69,24 @@ int hash_int(void* key)
   return (*(int*)key) & 0x7FFFFFFF;
 }
 
+int seg_fault()
+{
+    int* a = malloc(sizeof(int));
+    *(a + 502342) = 4363634;
+
+    return 0;
+}
+
+void sighandler(int signum) {
+   printf("Caught signal %d, coming out...\n", __LINE__);
+   exit(1);
+}
+
+int x(int y)
+{
+    return y;
+}
+
 int main()
 {
     Vector* v = vector_init_empty(free_int);
@@ -66,9 +104,14 @@ int main()
     vector_print(v, print_int);
     vector_print(copy_v, print_int);
 
-
     vector_free(v); 
     vector_free(copy_v);
+
+    //signal(SIGSEGV, sighandler); 
+
+    //MY_ASSERT(1);
+
+    ASSERT(1 == 2);
 
     return 0;
 }

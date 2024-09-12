@@ -21,8 +21,9 @@
 
 void vector_free(Vector* vector)
 {
-  for(int i = 0; i < vector->size; i++) 
-    vector->free_value(vector->array[i]);
+    if(vector->free_value != NULL)
+      for(int i = 0; i < vector->size; i++) 
+        vector->free_value(vector->array[i]);
 
   free(vector->array);
   free(vector);
@@ -84,7 +85,7 @@ Vector* vector_copy(Vector* vector, Copy copy_value)
 
 int vector_resize(Vector* vector, int new_capacity)
 {
-  if(new_capacity < vector->size)
+  if(new_capacity < vector->size || new_capacity > MAX_CAPACITY)
     return 1;
 
   void** resized_array = realloc(vector->array, new_capacity * sizeof(void*));

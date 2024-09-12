@@ -1,9 +1,11 @@
 #ifndef vector_h
 #define vector_h
 
+#include <limits.h>
 #include "generic_type_functions.h"
 
 #define DEFAULT_CAPACITY 16
+#define MAX_CAPACITY (INT_MAX >> 3)
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.
@@ -42,6 +44,8 @@ Vector* vector_init_empty(Free free_value);
   Free: fucntion pointer to free the values that are going to be stored in the array
 */
 Vector* vector_init(int initial_capacity, Free free_value);
+
+Vector* vector_init_array(void** array, int array_size, Free free_value);
 
 Vector* vector_copy(Vector* vector, Copy copy_value);
 

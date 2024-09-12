@@ -111,7 +111,5 @@ int main()
 
     //MY_ASSERT(1);
 
-    ASSERT(1 == 2);
-
     return 0;
 }

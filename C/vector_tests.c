@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <error.h>
@@ -14,8 +15,9 @@
 #define BOLD_ON  "\e[1m"
 #define BOLD_OFF "\e[m"
 #define RED_ON "\033[31m"
+#define GREEN_ON "\033[32m"
+#define COLOR_OFF "\033[m" 
 
-int SHOW_PRINT = 0;
 
 void sighandler(int);
 
@@ -23,12 +25,19 @@ void assert_test(int expr, int line, const char* function)
 {
     if(expr)
     {
-        printf(RED_ON "X Failed Test " BOLD_ON "%s()" BOLD_OFF RED_ON ". Line: " BOLD_ON "%d\n", function + 5, line);
+        printf(RED_ON "X Failed Test " BOLD_ON "%s" BOLD_OFF RED_ON ". Line: " BOLD_ON "%d\n", function + 5, line);
         exit(1);
     }
 }
 
-#define ASSERT_TEST(expr) (assert_test(expr ? 0 : 1, __LINE__, __func__))
+
+#define ASSERT_NAME(expr, func) (assert_test(expr ? 0 : 1, __LINE__, func))
+#define ASSERT_TEST(expr) (ASSERT_NAME(expr, __func__))
+
+int SHOW_PRINT = 0;
+#define PRINT_TEST if(SHOW_PRINT) printf("Executing Test" BOLD_ON " %s"  BOLD_OFF "...\n", __func__ + 5)
+
+#define CREATE_ARRAY(type, array_name, size) (type array_name[size]; for(int i = 0; i < size; i++) array_name[i] = i;)
 
 void seg_fault(int signum)
 {
@@ -36,6 +45,10 @@ void seg_fault(int signum)
     exit(1);
 }
     
+void print_int(void* integer)
+{
+  printf("%d", *(int*) integer);
+}
 
 int is_vector_equal_to_array(Vector* vector, int* array, int array_size)
 {
@@ -70,61 +83,216 @@ void* copy_int(void* integer)
     return result;
 }
 
-void print_int(void* integer)
-{
-  printf("%d", *(int*)integer);
-}
 
 int cmp_int(void* value1, void* value2)
 {
   return *(int*) value1 == *(int*) value2;
 }
 
+int test_vector_free()
+{
+    PRINT_TEST;
+
+    Vector* vector = vector_init(DEFAULT_CAPACITY, free_int);
+    int* value = malloc(sizeof(int)); *value = 2;
+
+    vector->array[5] = (void*) value;
+
+    vector_free(vector);
+
+    return errno;
+}
+
 int test_vector_init_empty()
 {
-    if(SHOW_PRINT) printf("Testing function," BOLD_ON " vector_init_empty" BOLD_OFF "...\n");
+    PRINT_TEST;
 
     Vector* vector = vector_init_empty(free_int);
 
     ASSERT_TEST(vector->capacity == DEFAULT_CAPACITY);
     ASSERT_TEST(vector->array != NULL);
     ASSERT_TEST(vector->size == 0);
-    ASSERT_TEST(vector->free_value != NULL);
+
+    free(vector);
 
     return errno;
 }
 
 int test_vector_init()
-{
-    Vector* vector_1 = vector_init(32, free_int);
+{ 
+    PRINT_TEST;
 
+    Vector* vector_1 = vector_init(32, free_int);
     ASSERT_TEST(vector_1->capacity == 32);
     ASSERT_TEST(vector_1->array != NULL);
     ASSERT_TEST(vector_1->size == 0);
-    ASSERT_TEST(vector_1->free_value != NULL);
+
+    Vector* vector_2 = vector_init(10, free_int);
+    ASSERT_TEST(vector_2->capacity == DEFAULT_CAPACITY); 
+    ASSERT_TEST(vector_2->array != NULL);
+    ASSERT_TEST(vector_2->size == 0);
 
     return errno;
 }
 
+int test_vector_init_array()
+{
+    PRINT_TEST;
+
+    int size_1 = 8;
+    int** array_vector_1 = malloc(sizeof(int) * sizeof(int) * size_1);
+
+    for(int i = 0; i < size_1; i++)
+        array_vector_1[i] = copy_int(&i);
+
+    Vector* vector_1 = vector_init_array((void**) array_vector_1, size_1, free_int);
+
+    int array_1[size_1]; for(int i = 0; i < size_1; i++) array_1[i] = i;
+    ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, size_1));
+    ASSERT_TEST(vector_1->capacity == size_1 * 2); 
+    ASSERT_TEST(vector_1->array != NULL);
+    ASSERT_TEST(vector_1->size == size_1);
+
+
+    int size_2 = 32;
+    int** array_vector_2 = malloc(sizeof(int) * sizeof(int) * size_2);
+
+    for(int i = 0; i < size_2; i++)
+        array_vector_2[i] = copy_int(&i);
+
+    Vector* vector_2 = vector_init_array((void**) array_vector_2, size_2, free_int);
+
+    int array_2[size_2]; for(int i = 0; i < size_2; i++) array_2[i] = i;
+    ASSERT_TEST(is_vector_equal_to_array(vector_2, array_2, size_2));
+    ASSERT_TEST(vector_2->capacity == size_2 * 2); 
+    ASSERT_TEST(vector_2->array != NULL);
+    ASSERT_TEST(vector_2->size == size_2);
+
+
+    vector_free(vector_1);
+    vector_free(vector_2);
+
+    return errno;
+
+}
+
 int test_vector_resize()
 {
-    Vector* vector = vector_init(16, free_int);
-    return 0;
+    PRINT_TEST;
+
+    Vector* vector = vector_init_empty(free_int);
+
+    ASSERT_TEST(!vector_resize(vector, 32));
+    ASSERT_TEST(vector->capacity == 32);
+    ASSERT_TEST(vector->array != NULL);
+
+    ASSERT_TEST(vector_resize(vector, -2));
+    ASSERT_TEST(vector->capacity == 32);
+    ASSERT_TEST(vector->array != NULL);
+
+    ASSERT_TEST(!vector_resize(vector, MAX_CAPACITY));
+    ASSERT_TEST(vector->capacity == MAX_CAPACITY);
+    ASSERT_TEST(vector->array != NULL);
+
+    ASSERT_TEST(!vector_resize(vector, 353453));
+    ASSERT_TEST(vector->capacity == 353453);
+    ASSERT_TEST(vector->array != NULL);
+
+    vector_free(vector);
+
+    return errno;
 }    
 
 
 int test_vector_add()
 {
-    Vector* vector = vector_init(16, free_int);
+    PRINT_TEST;
 
-    return 0;
+    Vector* vector_1 = vector_init(DEFAULT_CAPACITY, free_int);
+    for(int i = 0; i < 8; i++) 
+       vector_add(vector_1, &i, copy_int); 
+
+    ASSERT_TEST(vector_1->size == 8);
+    ASSERT_TEST(vector_1->capacity == DEFAULT_CAPACITY);
+
+    //This method ensures that the copy function we pass is being used
+    //if the function didn't work all numbers would be the last value i was
+    //in this case all numbers would be 7, because the reference we pass is the same
+    int array_1[8] = {0, 1, 2, 3, 4, 5, 6, 7}; 
+    ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, 8));
+
+
+    Vector* vector_2 = vector_init(DEFAULT_CAPACITY, free_int);
+    for(int i = 0; i < 30; i++) 
+       vector_add(vector_2, &i, copy_int); 
+
+    ASSERT_TEST(vector_2->size == 30);
+    ASSERT_TEST(vector_2->capacity == 32);
+
+    int array_2[30]; for(int i = 0; i < 30; i++) array_2[i] = i;
+    ASSERT_TEST(is_vector_equal_to_array(vector_2, array_2, 30));
+
+
+    Vector* vector_3 = vector_init(DEFAULT_CAPACITY, free_int);
+    
+    int* p1 = malloc(sizeof(int)); *p1 = 1;
+    int* p2 = malloc(sizeof(int)); *p2 = 2;
+    int* p3 = malloc(sizeof(int)); *p3 = 3;
+    int* p4 = malloc(sizeof(int)); *p4 = 4;
+    int* p5 = malloc(sizeof(int)); *p5 = 5;
+
+    vector_add(vector_3, p1, NULL); 
+    vector_add(vector_3, p2, NULL); 
+    vector_add(vector_3, p3, NULL); 
+    vector_add(vector_3, p4, NULL); 
+    vector_add(vector_3, p5, NULL); 
+
+    ASSERT_TEST(p1 == vector_3->array[0]);
+    ASSERT_TEST(p2 == vector_3->array[1]);
+    ASSERT_TEST(p3 == vector_3->array[2]);
+    ASSERT_TEST(p4 == vector_3->array[3]);
+    ASSERT_TEST(p5 == vector_3->array[4]);
+
+    vector_free(vector_1);
+    vector_free(vector_2);
+    vector_free(vector_3);
+
+    return errno;
+}
+
+int test_vector_set()
+{
+    Vector* vector_1 = vector_init(DEFAULT_CAPACITY, free_int);
+    for(int i = 0; i < 8; i++)
+        vector_add(vector_1, &i, copy_int);
+
+    int* value = malloc(sizeof(int)); *value = 69; //( ͡° ͜ʖ ͡°)
+    ASSERT_TEST(!vector_set(vector_1, value, -6, copy_int)); 
+    ASSERT_TEST(!vector_set(vector_1, value, 65454, copy_int)); 
+    ASSERT_TEST(vector_set(vector_1, value, 3, copy_int)); 
+    ASSERT_TEST(vector_1->array[3] ? *(int*) vector_1->array[3] == *value : 0);
+
+    ASSERT_TEST(vector_set(vector_1, value, 4, NULL)); 
+    ASSERT_TEST(vector_1->array[4] == value);
+    
+    vector_free(vector_1);
+
+    return errno;
 }
 
 void test_vector(int show_print)
 {
+    printf(GREEN_ON BOLD_ON "Testing Vector.\n" BOLD_OFF COLOR_OFF);
+
     signal(SIGSEGV, seg_fault);
     SHOW_PRINT = show_print;
     
+    ASSERT_TEST(!test_vector_free());
+    ASSERT_TEST(!test_vector_init_empty());
+    ASSERT_TEST(!test_vector_init());
+    ASSERT_TEST(!test_vector_init_array());
+    ASSERT_TEST(!test_vector_resize());
+    ASSERT_TEST(!test_vector_add());
     ASSERT_TEST(!test_vector_init_empty());
 }
     

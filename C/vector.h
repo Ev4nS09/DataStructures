@@ -4,7 +4,7 @@
 #include <limits.h>
 #include "generic_type_functions.h"
 
-#define DEFAULT_CAPACITY 16
+#define MIN_CAPACITY 16
 #define MAX_CAPACITY (INT_MAX >> 3)
 
 /*

@@ -33,8 +33,8 @@ Vector* vector_init_empty(Free free_value)
 {
   Vector* result = malloc(sizeof(Vector));
 
-  result->array =  calloc(DEFAULT_CAPACITY, sizeof(void*));
-  result->capacity = DEFAULT_CAPACITY;
+  result->array =  calloc(MIN_CAPACITY, sizeof(void*));
+  result->capacity = MIN_CAPACITY;
   result->size = 0;
   result->free_value = free_value;
 
@@ -47,7 +47,7 @@ Vector* vector_init(int initial_capacity, Free free_value)
    return NULL; 
     
   Vector* result = malloc(sizeof(Vector));
-  result->capacity = initial_capacity > DEFAULT_CAPACITY ? initial_capacity : DEFAULT_CAPACITY;
+  result->capacity = initial_capacity > MIN_CAPACITY ? initial_capacity : MIN_CAPACITY;
   result->array = calloc(initial_capacity, sizeof(void*));
   result->size = 0;
   result->free_value = free_value;
@@ -85,7 +85,7 @@ Vector* vector_copy(Vector* vector, Copy copy_value)
 
 int vector_resize(Vector* vector, int new_capacity)
 {
-  if(new_capacity < vector->size || new_capacity > MAX_CAPACITY)
+  if(new_capacity < vector->size || new_capacity > MAX_CAPACITY || new_capacity < MIN_CAPACITY)
     return 1;
 
   void** resized_array = realloc(vector->array, new_capacity * sizeof(void*));
@@ -99,6 +99,9 @@ int vector_resize(Vector* vector, int new_capacity)
 
 int vector_add(Vector* vector, void* value, Copy copy_value)
 {
+  if(vector->size == MAX_CAPACITY)
+    return 1;
+
   vector->array[vector->size] = COPY(copy_value, value);
   vector->size = vector->size + 1;
 
@@ -124,14 +127,11 @@ int vector_set(Vector* vector, void* value, int index, Copy copy_value)
 
 int vector_add_at(Vector* vector, void* value, int index, Copy copy_value)
 {
-  if(index < 0)
+  if(index < 0 || index > vector->size)
    return 1; 
 
-  if(index >= vector->size)
-    vector_set_size(vector, index);
-
   memmove(vector->array + index+1, vector->array + index, (vector->size - index) * sizeof(void*));
-  vector->array[index] = copy_value(value);
+  vector->array[index] = copy_value ? copy_value(value) : value;
   vector->size = vector->size + 1;
 
   if(vector->size >= vector->capacity)
@@ -142,6 +142,9 @@ int vector_add_at(Vector* vector, void* value, int index, Copy copy_value)
 
 int vector_remove(Vector* vector, int index)
 {
+  if(index < 0 || index >= vector->size)
+    return 1;
+
   vector_set(vector, 0, index, NULL);
   memmove(vector->array + index, vector->array + index+1, (vector->size - (index+1)) * sizeof(void*));
 
@@ -204,12 +207,12 @@ int vector_set_size(Vector* vector, int new_size)
   if(new_size < 0)
     return 1;
 
-  if(new_size > vector->size)
+  if(new_size >= vector->size)
   {
     for(int i = vector->size; i < new_size; i++)
       vector_add(vector, NULL, NULL);
   } 
-  else if(new_size < vector->size)
+  else
   {
     vector_remove_from_to(vector, new_size, vector->size);
     vector->size = new_size;

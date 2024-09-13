@@ -164,7 +164,7 @@ int test_vector_init_array()
     PRINT_TEST;
 
     int size_1 = 8;
-    int** array_vector_1 = malloc(sizeof(int) * sizeof(int) * size_1);
+    int** array_vector_1 = malloc(sizeof(int*) * size_1);
 
     for(int i = 0; i < size_1; i++)
         array_vector_1[i] = copy_int(&i);
@@ -179,7 +179,7 @@ int test_vector_init_array()
 
 
     int size_2 = 32;
-    int** array_vector_2 = malloc(sizeof(int) * sizeof(int) * size_2);
+    int** array_vector_2 = malloc(sizeof(int*) * size_2);
 
     for(int i = 0; i < size_2; i++)
         array_vector_2[i] = copy_int(&i);

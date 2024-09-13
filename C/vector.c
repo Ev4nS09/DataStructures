@@ -10,6 +10,7 @@
   OWN RISK!!
 */
 
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,10 +42,10 @@ Vector* vector_init_empty(Free free_value)
   return result;
 }
 
-Vector* vector_init(int initial_capacity, Free free_value)
+Vector* vector_init(unsigned int initial_capacity, Free free_value)
 {
-  if(initial_capacity < 0)
-   return NULL; 
+  if(initial_capacity > MAX_CAPACITY)
+    return NULL;
     
   Vector* result = malloc(sizeof(Vector));
   result->capacity = initial_capacity > MIN_CAPACITY ? initial_capacity : MIN_CAPACITY;
@@ -55,12 +56,15 @@ Vector* vector_init(int initial_capacity, Free free_value)
   return result;
 }
 
-Vector* vector_init_array(void** array, int array_size, Free free_value)
+Vector* vector_init_array(void** array, unsigned int array_size, Free free_value)
 {
+  if(array_size > MAX_CAPACITY >> 1)
+    return NULL;
+
   Vector* result = malloc(sizeof(Vector));
   result->array = array;
   result->size = array_size;
-  result->capacity = array_size * 2;
+  result->capacity = array_size << 1;
   result->free_value = free_value;
 
   return result;
@@ -68,6 +72,9 @@ Vector* vector_init_array(void** array, int array_size, Free free_value)
 
 Vector* vector_copy(Vector* vector, Copy copy_value)
 {
+  if(!vector)
+    return NULL;
+
   Vector* result = malloc(sizeof(Vector));
 
   result->array = malloc(sizeof(void*) * vector->size);
@@ -83,7 +90,7 @@ Vector* vector_copy(Vector* vector, Copy copy_value)
 }
 
 
-int vector_resize(Vector* vector, int new_capacity)
+int vector_resize(Vector* vector, unsigned int new_capacity)
 {
   if(new_capacity < vector->size || new_capacity > MAX_CAPACITY || new_capacity < MIN_CAPACITY)
     return 1;
@@ -111,9 +118,9 @@ int vector_add(Vector* vector, void* value, Copy copy_value)
   return 0;
 }
 
-int vector_set(Vector* vector, void* value, int index, Copy copy_value)
+int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value)
 {
- if(index < 0 || index >= vector->size)
+ if(index >= vector->size)
     return 1; 
 
   void* temp_value = vector->array[index];
@@ -125,9 +132,9 @@ int vector_set(Vector* vector, void* value, int index, Copy copy_value)
   return 0;
 }
 
-int vector_add_at(Vector* vector, void* value, int index, Copy copy_value)
+int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_value)
 {
-  if(index < 0 || index > vector->size)
+  if(index > vector->size)
    return 1; 
 
   memmove(vector->array + index+1, vector->array + index, (vector->size - index) * sizeof(void*));
@@ -140,9 +147,9 @@ int vector_add_at(Vector* vector, void* value, int index, Copy copy_value)
   return 0;
 }
 
-int vector_remove(Vector* vector, int index)
+int vector_remove(Vector* vector, unsigned int index)
 {
-  if(index < 0 || index >= vector->size)
+  if(index >= vector->size)
     return 1;
 
   vector_set(vector, 0, index, NULL);
@@ -156,9 +163,9 @@ int vector_remove(Vector* vector, int index)
   return 0;
 }
 
-int vector_remove_from_to(Vector* vector, int from, int to)
+int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to)
 {
-  if(from < 0 || to < 0 || from > vector->size || to > vector-> size)
+  if(from >= vector->size || to >= vector->size)
     return 1;
 
   if(from > to)
@@ -167,15 +174,11 @@ int vector_remove_from_to(Vector* vector, int from, int to)
     from = to;
     to = temp;
   }
-  else if(from == to)
-  {
-    return vector_remove(vector, from);
-  }
 
-  for(int i = from; i < to; i++)
+  for(int i = from; i <= to; i++)
     vector_set(vector, NULL, i, NULL);
 
-  memmove(vector->array + from, vector->array + to, (vector->size - (to)) * sizeof(void*));
+  memmove(vector->array + from, vector->array + to, (vector->size - to) * sizeof(void*));
   
   vector->size = vector->size - (to - from);
   
@@ -185,28 +188,32 @@ int vector_remove_from_to(Vector* vector, int from, int to)
   return 0;
 }
 
-void* vector_get(Vector* vector, int index, Copy copy_value)
+void* vector_get(Vector* vector, unsigned int index, Copy copy_value)
 {
-  if(index < 0 || index >= vector->size)
+  if(!vector || index >= vector->size)
     return NULL;
 
   return COPY(copy_value, vector->array[index]);
 }
 
-void* vector_get_remove(Vector* vector, int index, Copy copy_value)
+void* vector_get_remove(Vector* vector, unsigned int index, Copy copy_value)
 {
-  void* result = copy_value(vector->array[index]);
-  vector_remove(vector, index);
+  if(!vector)
+    return NULL;
+
+  void* result = COPY(copy_value, vector->array[index]);
+
+  if(copy_value)
+    vector_remove(vector,index);
+  else 
+    vector->array[index] = NULL; 
 
   return result;
 }
 
 
-int vector_set_size(Vector* vector, int new_size)
+int vector_set_size(Vector* vector, unsigned int new_size)
 {
-  if(new_size < 0)
-    return 1;
-
   if(new_size >= vector->size)
   {
     for(int i = vector->size; i < new_size; i++)
@@ -222,6 +229,12 @@ int vector_set_size(Vector* vector, int new_size)
 }
 void vector_print(Vector* vector, Print print_value)
 {
+  if(!vector)
+  {
+    printf("Vector: NULL\n");
+    return;
+  }
+
   printf("Vector: ");
   if(vector->size == 0)
     printf("[]\n");

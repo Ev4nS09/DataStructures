@@ -375,7 +375,53 @@ int test_vector_remove()
 int test_vector_remove_from_to()
 {
     PRINT_TEST;
+
+    Vector* vector_1 = vector_init(MIN_CAPACITY, free_int);
+    add_values_to_vector(vector_1, 10);
+
+
+    ASSERT_TEST(vector_remove_from_to(vector_1, -1, 7));
+    ASSERT_TEST(vector_remove_from_to(vector_1, 2, 99));
+
+    int array_1[4] = {0, 1, 8, 9};
+    ASSERT_TEST(!vector_remove_from_to(vector_1, 2, 7));
+    ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, 4));
+    ASSERT_TEST(vector_1->size == 4);
+    ASSERT_TEST(vector_1->capacity == 16);
+    ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, 4));
+
+
+    Vector* vector_2 = vector_init(MIN_CAPACITY, free_int);
+    add_values_to_vector(vector_2, 32);
     
+    int array_2[4] = {0, 1, 30, 31};
+    ASSERT_TEST(!vector_remove_from_to(vector_2, 2, 29));
+    ASSERT_TEST(is_vector_equal_to_array(vector_2, array_2, 4));
+    ASSERT_TEST(vector_2->size == 4);
+    ASSERT_TEST(vector_2->capacity == 16);
+
+    Vector* vector_3 = vector_init(256, free_int);
+    add_values_to_vector(vector_3, 251);
+    
+    int array_3[5] = {0, 1, 248, 249, 250};
+    ASSERT_TEST(!vector_remove_from_to(vector_3, 2, 247));
+    ASSERT_TEST(is_vector_equal_to_array(vector_3, array_3, 5));
+    ASSERT_TEST(vector_3->size == 5);
+    ASSERT_TEST(vector_3->capacity == 20);
+
+    Vector* vector_4 = vector_init(256, free_int);
+    add_values_to_vector(vector_4, 256);
+    
+    int array_4[0] = {};
+    ASSERT_TEST(!vector_remove_from_to(vector_4, 0, 255));
+    ASSERT_TEST(is_vector_equal_to_array(vector_4, array_4, 0));
+    ASSERT_TEST(vector_4->size == 0);
+    ASSERT_TEST(vector_4->capacity == 16);
+
+    vector_free(vector_1);
+    vector_free(vector_2);
+    vector_free(vector_3);
+    vector_free(vector_4);
 
     return errno;
 }

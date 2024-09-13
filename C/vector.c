@@ -22,9 +22,8 @@
 
 void vector_free(Vector* vector)
 {
-    if(vector->free_value != NULL)
-      for(int i = 0; i < vector->size; i++) 
-        vector->free_value(vector->array[i]);
+  for(int i = 0; i < vector->size; i++) 
+    vector->free_value(vector->array[i]);
 
   free(vector->array);
   free(vector);
@@ -178,12 +177,12 @@ int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to)
   for(int i = from; i <= to; i++)
     vector_set(vector, NULL, i, NULL);
 
-  memmove(vector->array + from, vector->array + to, (vector->size - to) * sizeof(void*));
+  memmove(vector->array + from, vector->array + to + 1, (vector->size - to) * sizeof(void*));
   
-  vector->size = vector->size - (to - from);
+  vector->size = vector->size - (to - from + 1);
   
   if(vector->size <= vector->capacity >> 2)
-    vector_resize(vector, vector->capacity >> 1);
+    vector_resize(vector, vector->size << 2 > MIN_CAPACITY ? vector->size << 2 : MIN_CAPACITY);
 
   return 0;
 }

@@ -78,7 +78,7 @@ int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_val
 int vector_remove(Vector* vector, unsigned int index);
 
 /*
-  Removes a chunk of elements from the vector.
+  Removes a chunk of elements from an index 'from' to an index 'to' inclusive
 */
 int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to);
 

@@ -7,7 +7,7 @@
 #define MIN_CAPACITY 16
 #define MAX_CAPACITY (UINT_MAX >> 3)
 
-#define _vector_add(type, vector, value) (*(((type*) _vector_sim_add(vector)) + vector->size - 1) = value)
+#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : 1)
 #define _vector_get(type, vector, index) (*(((type*) v->array) + index))
 
 /*
@@ -62,7 +62,7 @@ int vector_resize(Vector* vector, unsigned int new_capacity);
   Adds an element to the vector, if the the size of the vector equals the capicity than we need to resize the array.
   We use the function resize and give the new capicty the following argument, vector->capacity * 2.
 */
-int vector_add(Vector* vector, void* value, Copy copy_value);
+int _vector_add(Vector* vector);
 
 
 void* _vector_sim_add(Vector* vector);

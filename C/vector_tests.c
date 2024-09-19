@@ -35,7 +35,7 @@ void add_values_to_vector(Vector *vector, int number_of_values) {
   for (int i = 0; i < number_of_values; i++) {
     int *value = malloc(sizeof(int));
     *value = i;
-    vector_add(vector, value, NULL);
+    vector_add(int*, vector, value);
   }
 }
 
@@ -190,7 +190,7 @@ int test_vector_add() {
 
   Vector *vector_1 = vector_init(MIN_CAPACITY);
   for (int i = 0; i < 8; i++)
-    vector_add(vector_1, &i, copy_int);
+    vector_add(int*,vector_1, copy_int(&i));
 
   ASSERT_TEST(vector_1->size == 8);
   ASSERT_TEST(vector_1->capacity == MIN_CAPACITY);
@@ -204,7 +204,7 @@ int test_vector_add() {
 
   Vector *vector_2 = vector_init(MIN_CAPACITY);
   for (int i = 0; i < 30; i++)
-    vector_add(vector_2, &i, copy_int);
+    vector_add(int*, vector_2, copy_int(&i));
 
   ASSERT_TEST(vector_2->size == 30);
   ASSERT_TEST(vector_2->capacity == 32);
@@ -227,11 +227,11 @@ int test_vector_add() {
   int *p5 = malloc(sizeof(int));
   *p5 = 5;
 
-  vector_add(vector_3, p1, NULL);
-  vector_add(vector_3, p2, NULL);
-  vector_add(vector_3, p3, NULL);
-  vector_add(vector_3, p4, NULL);
-  vector_add(vector_3, p5, NULL);
+  vector_add(int*, vector_3, p1);
+  vector_add(int*, vector_3, p2);
+  vector_add(int*, vector_3, p3);
+  vector_add(int*, vector_3, p4);
+  vector_add(int*, vector_3, p5);
 
   ASSERT_TEST(p1 == vector_3->array[0]);
   ASSERT_TEST(p2 == vector_3->array[1]);
@@ -334,21 +334,21 @@ int test_vector_remove() {
 
     int value;
     value = 2;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = 10;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = 34;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = 12;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = 3;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = -4; 
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = -67;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
     value = 4363;
-    vector_add(vector_3, &value, copy_int);
+    vector_add(int*, vector_3, copy_int(&value));
 
     ASSERT_TEST(!vector_remove(vector_3, 2, free_int)); //{2, 10, 12, 3, -4, -67, 4363}
     ASSERT_TEST(!vector_remove(vector_3, 5, free_int)); //{2, 10, 12, 3, -4, 4363}
@@ -483,11 +483,11 @@ int test_vector_get()
     int *p5 = malloc(sizeof(int));
     *p5 = 5;
 
-    vector_add(vector_2, p1, NULL);
-    vector_add(vector_2, p2, NULL);
-    vector_add(vector_2, p3, NULL);
-    vector_add(vector_2, p4, NULL);
-    vector_add(vector_2, p5, NULL);
+    vector_add(int*, vector_2, p1);
+    vector_add(int*, vector_2, p2);
+    vector_add(int*, vector_2, p3);
+    vector_add(int*, vector_2, p4);
+    vector_add(int*, vector_2, p5);
 
     ASSERT_TEST(vector_get(vector_2, 0, NULL) == p1);
     ASSERT_TEST(vector_get(vector_2, 1, NULL) == p2);
@@ -546,11 +546,11 @@ int test_vector_get_remove()
     int *p5 = malloc(sizeof(int));
     *p5 = 5;
 
-    vector_add(vector_2, p1, NULL);
-    vector_add(vector_2, p2, NULL);
-    vector_add(vector_2, p3, NULL);
-    vector_add(vector_2, p4, NULL);
-    vector_add(vector_2, p5, NULL);
+    vector_add(int*, vector_2, p1);
+    vector_add(int*, vector_2, p2);
+    vector_add(int*, vector_2, p3);
+    vector_add(int*, vector_2, p4);
+    vector_add(int*, vector_2, p5);
 
     ASSERT_TEST(vector_get_remove(vector_2, 0, NULL, free_int) == p1);
     ASSERT_TEST(vector_get_remove(vector_2, 1, NULL, free_int) == p2);
@@ -650,7 +650,7 @@ int test_vector(int show_print)
     /*
     Vector *vector = vector_init(MAX_CAPACITY);
     for(int i = 0; i < 100; i++)
-    vector_add(vector, &i, copy_int);
+    vector_add(int*, vector, &i, copy_int);
     sleep(10);
 
     vector_destroy(vector);

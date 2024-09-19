@@ -13,8 +13,10 @@
 int main(int argc, char* argv[])
 {
     Vector* v = vector_init(32);
-    _vector_add(int, v, 10);
-    _vector_get(int, v, 0);
+
+
+    vector_add(int, v, 10);
+    int x = _vector_get(int, v, 0);
 
     vector_destroy(v, NULL);
 

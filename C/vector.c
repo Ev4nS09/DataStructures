@@ -105,7 +105,7 @@ int vector_resize(Vector* vector, unsigned int new_capacity)
 }
 
 
-int vector_add(Vector* vector, void* value, Copy copy_value)
+int _vector_add(Vector* vector)
 {
   if(vector->size == MAX_CAPACITY)
     return 1;
@@ -113,17 +113,9 @@ int vector_add(Vector* vector, void* value, Copy copy_value)
   if(vector->size >= vector->capacity)
     vector_resize(vector, vector->capacity << 1);
 
-  vector->array[vector->size] = COPY(copy_value, value);
   vector->size = vector->size + 1;
 
   return 0;
-}
-
-void* _vector_sim_add(Vector* vector)
-{
-    vector->size = vector->size + 1;
-
-    return vector->array;
 }
 
 int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value, Free free_value)
@@ -228,7 +220,7 @@ int vector_set_size(Vector* vector, unsigned int new_size, Free free_value)
         return 1;
 
     for(int i = vector->size; i < new_size; i++)
-      vector_add(vector, NULL, NULL);
+        vector_add(void*, vector, NULL);
 
     if(vector->size >  new_size)
         vector_remove_from_to(vector, new_size, vector->size - 1, free_value);

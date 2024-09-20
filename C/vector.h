@@ -9,6 +9,7 @@
 
 #define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : 1)
 #define _vector_get(type, vector, index) (*(((type*) v->array) + index))
+//#define _vector_set(type, vector, index) (
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.
@@ -65,7 +66,6 @@ int vector_resize(Vector* vector, unsigned int new_capacity);
 int _vector_add(Vector* vector);
 
 
-void* _vector_sim_add(Vector* vector);
 /*
   Sets a value from the array for another one at a given index
 */

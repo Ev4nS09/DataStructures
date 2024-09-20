@@ -40,7 +40,7 @@ Vector* vector_init(unsigned int initial_capacity)
   result->capacity = initial_capacity > MIN_CAPACITY ? initial_capacity : MIN_CAPACITY;
   result->array = calloc(initial_capacity, sizeof(void*));
   result->size = 0;
-  
+ 
   return result;
 }
 
@@ -120,16 +120,14 @@ int _vector_add(Vector* vector)
 
 int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value, Free free_value)
 {
- if(index >= vector->size)
-    return 1; 
+    if(index >= vector->size)
+        return 1; 
 
-  void* temp_value = vector->array[index];
-  vector->array[index] = copy_value ? copy_value(value) : value;
-
-  if(temp_value != NULL)
+    void* temp_value = vector->array[index];
+    vector->array[index] = copy_value ? copy_value(value) : value;
     free_value(temp_value);
 
-  return 0;
+    return 0;
 }
 
 int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_value)

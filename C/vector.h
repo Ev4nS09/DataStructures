@@ -7,7 +7,7 @@
 #define MIN_CAPACITY 16
 #define MAX_CAPACITY (UINT_MAX >> 3)
 
-#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : 1)
+#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : 0)
 #define _vector_get(type, vector, index) (*(((type*) v->array) + index))
 //#define _vector_set(type, vector, index) (
 

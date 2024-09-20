@@ -10,7 +10,7 @@
 #define GREEN_ON "\033[32m"
 #define COLOR_OFF "\033[m"
 
-void *copy_int(void *integer) {
+void *copy_int2(void *integer) {
   if (integer == (void *)0)
     return NULL;
 
@@ -20,19 +20,19 @@ void *copy_int(void *integer) {
   return result;
 }
 
-void free_int(void *integer) { free((int *)integer); }
+void free_int2(void *integer) { free((int *)integer); }
 
 int main(int argc, char* argv[])
 {
-    Vector* v = vector_init_empty();
+//    Vector* v = vector_init_empty();
+//
+//    for(int i = 0; i < MAX_CAPACITY; i++)
+//        //vector_add(int*, v, copy_int2(&i));
+//        vector_add(int, v, i);
+//
+//    vector_destroy(v, free_int2);
 
-    for(int i = 0; i < MAX_CAPACITY; i++)
-        vector_add(int*, v, copy_int(&i));
-        //vector_add(int, v, i);
-
-    vector_destroy(v, free_int);
-
-    //test_vector(((int) argv[1][0]) - '0');
+    test_vector(((int) argv[1][0]) - '0');
 
     if(NUM_OF_ERRORS == 0)
         printf(GREEN_ON " All Tests Passed.\n" COLOR_OFF);

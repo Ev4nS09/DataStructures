@@ -10,7 +10,13 @@
   OWN RISK!!
 */
 
-#include <linux/limits.h>
+#ifdef __linux__
+  #include <linux/limits.h>
+#elif _WIN32
+  #include <limits.h>
+  #include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

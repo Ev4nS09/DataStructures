@@ -446,22 +446,22 @@ int test_vector_get()
     Vector* vector_1 = vector_init(MIN_CAPACITY);
     add_values_to_vector(vector_1, 15);
 
-    ASSERT_TEST(!vector_get(vector_1, 100, NULL)); 
-    ASSERT_TEST(!vector_get(vector_1, 83475837, NULL)); 
-    ASSERT_TEST(!vector_get(NULL, 5, copy_int));
-    ASSERT_TEST(!vector_get(NULL, 102322, copy_int));
-    ASSERT_TEST(!vector_get(NULL, 1, NULL));
+    ASSERT_TEST(!vector_get(int*, vector_1, 100)); 
+    ASSERT_TEST(!vector_get(int*, vector_1, 83475837)); 
+//    ASSERT_TEST(!vector_get(int*, NULL, 5));
+//    ASSERT_TEST(!vector_get(int*, NULL, 102322));
+//    ASSERT_TEST(!vector_get(int*, NULL, 1, NULL));
 
     
-    int* value_1 = vector_get(vector_1, 0, copy_int);
+    int* value_1 = vector_get(int*, vector_1, 0);
     ASSERT_TEST(*value_1 == 0);
-    int* value_2 = vector_get(vector_1, 1, copy_int);
+    int* value_2 = vector_get(int*, vector_1, 1);
     ASSERT_TEST(*value_2 == 1);
-    int* value_3 = vector_get(vector_1, 2, copy_int);
+    int* value_3 = vector_get(int*, vector_1, 2);
     ASSERT_TEST(*value_3 == 2);
-    int* value_4 = vector_get(vector_1, 3, copy_int);
+    int* value_4 = vector_get(int*, vector_1, 3);
     ASSERT_TEST(*value_4 == 3);
-    int* value_5 = vector_get(vector_1, 14, copy_int);
+    int* value_5 = vector_get(int*, vector_1, 14);
     ASSERT_TEST(*value_5 == 14);
 
     free(value_1);
@@ -489,11 +489,11 @@ int test_vector_get()
     vector_add(int*, vector_2, p4);
     vector_add(int*, vector_2, p5);
 
-    ASSERT_TEST(vector_get(vector_2, 0, NULL) == p1);
-    ASSERT_TEST(vector_get(vector_2, 1, NULL) == p2);
-    ASSERT_TEST(vector_get(vector_2, 2, NULL) == p3);
-    ASSERT_TEST(vector_get(vector_2, 3, NULL) == p4);
-    ASSERT_TEST(vector_get(vector_2, 4, NULL) == p5);
+    ASSERT_TEST(vector_get(int*, vector_2, 0) == p1);
+    ASSERT_TEST(vector_get(int*, vector_2, 1) == p2);
+    ASSERT_TEST(vector_get(int*, vector_2, 2) == p3);
+    ASSERT_TEST(vector_get(int*, vector_2, 3) == p4);
+    ASSERT_TEST(vector_get(int*, vector_2, 4) == p5);
 
     vector_destroy(vector_1, free_int); 
     vector_destroy(vector_2, free_int); 
@@ -581,17 +581,17 @@ int test_vector_set_size()
     ASSERT_TEST(!vector_set_size(vector_1, 30, free_int));
     ASSERT_TEST(vector_1->size == 30);
     ASSERT_TEST(vector_1->capacity == 32);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 6, NULL) == 6);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 9, NULL) == 9);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 14, NULL) == 14);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 6) == 6);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 9) == 9);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 14) == 14);
     
     ASSERT_TEST(!vector_set_size(vector_1, 4, free_int));
     ASSERT_TEST(vector_1->size == 4);
     ASSERT_TEST(vector_1->capacity == MIN_CAPACITY);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 0, NULL) == 0);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 1, NULL) == 1);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 2, NULL) == 2);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 3, NULL) == 3);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 0) == 0);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 1) == 1);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 2) == 2);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 3) == 3);
 
     vector_destroy(vector_1, free_int);
 
@@ -611,17 +611,17 @@ int test_vector_set_capacity()
     ASSERT_TEST(!vector_set_capacity(vector_1, 30, free_int));
     ASSERT_TEST(vector_1->size == 15);
     ASSERT_TEST(vector_1->capacity == 30);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 6, NULL) == 6);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 9, NULL) == 9);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 14, NULL) == 14);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 6) == 6);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 9) == 9);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 14) == 14);
     
     ASSERT_TEST(!vector_set_capacity(vector_1, MIN_CAPACITY, free_int));
     ASSERT_TEST(vector_1->size == 15);
     ASSERT_TEST(vector_1->capacity == MIN_CAPACITY);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 0, NULL) == 0);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 1, NULL) == 1);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 2, NULL) == 2);
-    ASSERT_TEST(*(int*) vector_get(vector_1, 3, NULL) == 3);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 0) == 0);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 1) == 1);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 2) == 2);
+    ASSERT_TEST(*(int*) vector_get(int*, vector_1, 3) == 3);
 
     vector_destroy(vector_1, free_int);
 

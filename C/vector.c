@@ -130,8 +130,8 @@ int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value,
         return 1; 
 
     void* temp_value = vector->array[index];
-    vector->array[index] = copy_value ? copy_value(value) : value;
-    free_value(temp_value);
+    if(free_value)
+        free_value(temp_value);
 
     return 0;
 }
@@ -194,7 +194,7 @@ int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to, Fr
   return 0;
 }
 
-void* vector_get(Vector* vector, unsigned int index, Copy copy_value)
+void* _vector_get(Vector* vector, unsigned int index, Copy copy_value)
 {
   if(!vector || index >= vector->size)
     return NULL;

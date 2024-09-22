@@ -7,9 +7,9 @@
 #define MIN_CAPACITY 16
 #define MAX_CAPACITY (UINT_MAX >> 3)
 
-#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : 0)
-#define _vector_get(type, vector, index) (*(((type*) v->array) + index))
-//#define _vector_set(type, vector, index) (
+#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : (0))
+#define vector_get(type, vector, index) (_vector_get(vector, index, NULL) ? (*(((type*) vector->array) + index)) : (0))
+#define _vector_set(type, vector, value, index, free) (!vector_set(vector, NULL, index, NULL, free) ? (*(((type*)vector->array) + index) = value) : (0))
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.
@@ -89,7 +89,7 @@ int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to, Fr
 /*
   Return the value at the position given from the vector
 */
-void* vector_get(Vector* vector, unsigned int index, Copy copy_value);
+void* _vector_get(Vector* vector, unsigned int index, Copy copy_value);
 
 void* vector_get_remove(Vector* vector, unsigned int index, Copy copy_value, Free free_value);
 

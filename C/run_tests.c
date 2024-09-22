@@ -24,13 +24,14 @@ void free_int2(void *integer) { free((int *)integer); }
 
 int main(int argc, char* argv[])
 {
-//    Vector* v = vector_init_empty();
-//
-//    for(int i = 0; i < MAX_CAPACITY; i++)
-//        //vector_add(int*, v, copy_int2(&i));
-//        vector_add(int, v, i);
-//
-//    vector_destroy(v, free_int2);
+    Vector* v = vector_init_empty();
+
+    for(int i = 0; i < 10000000; i++)
+        //vector_add(int*, v, copy_int2(&i));
+        vector_add(int, v, i);
+
+    vector_destroy(v, NULL);
+    
 
     test_vector(((int) argv[1][0]) - '0');
 

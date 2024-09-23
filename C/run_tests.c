@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
 {
     Vector* v = vector_init_empty();
 
-    for(int i = 0; i < 10000000; i++)
+    //for(int i = 0; i < 10000000; i++)
         //vector_add(int*, v, copy_int2(&i));
-        vector_add(int, v, i);
+    //vector_add(int, v, i);
 
     vector_destroy(v, NULL);
     

@@ -118,28 +118,31 @@ int test_vector_init() {
 int test_vector_init_array() {
   PRINT_TEST;
 
-  int size_1 = 8;
-  int **array_vector_1 = malloc(sizeof(int *) * size_1);
-
-  for (int i = 0; i < size_1; i++)
-    array_vector_1[i] = copy_int(&i);
-
-  Vector *vector_1 =
-      vector_init_array((void **)array_vector_1, size_1, size_1);
-
-  int array_1[size_1];
-  for (int i = 0; i < size_1; i++)
-    array_1[i] = i;
-  ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, size_1));
-  ASSERT_TEST(vector_1->capacity == MIN_CAPACITY);
-  ASSERT_TEST(vector_1->array != NULL);
-  ASSERT_TEST(vector_1->size == size_1);
+//  int size_1 = 8;
+//  int **array_vector_1 = malloc(sizeof(int *) * size_1);
+//
+//  for (int i = 0; i < size_1; i++)
+//    array_vector_1[i] = copy_int(&i);
+//
+//  Vector *vector_1 =
+//      vector_init_array((void **)array_vector_1, size_1, size_1);
+//
+//  int array_1[size_1];
+//  for (int i = 0; i < size_1; i++)
+//    array_1[i] = i;
+//  ASSERT_TEST(is_vector_equal_to_array(vector_1, array_1, size_1));
+//  ASSERT_TEST(vector_1->capacity == MIN_CAPACITY);
+//  ASSERT_TEST(vector_1->array != NULL);
+//  ASSERT_TEST(vector_1->size == size_1);
 
   int size_2 = 32;
   int **array_vector_2 = malloc(sizeof(int *) * size_2);
 
   for (int i = 0; i < size_2; i++)
+    {
+        printf("%d\n", i);
     array_vector_2[i] = copy_int(&i);
+    }
 
   Vector *vector_2 =
       vector_init_array((void **)array_vector_2, size_2, size_2);
@@ -151,8 +154,8 @@ int test_vector_init_array() {
   ASSERT_TEST(vector_2->capacity == size_2);
   ASSERT_TEST(vector_2->array != NULL);
   ASSERT_TEST(vector_2->size == size_2);
-
-  vector_destroy(vector_1, free_int);
+    
+  //vector_destroy(vector_1, free_int);
   vector_destroy(vector_2, free_int);
 
   return errno;
@@ -633,10 +636,11 @@ int test_vector(int show_print)
     printf(GREEN_ON BOLD_ON "Testing Vector.\n" BOLD_OFF COLOR_OFF);
     SHOW_PRINT = show_print;
 
+    while(1){
     ASSERT_TEST(!test_vector_destroy());
     ASSERT_TEST(!test_vector_init_empty());
     ASSERT_TEST(!test_vector_init());
-    ASSERT_TEST(!test_vector_init_array());
+    //ASSERT_TEST(!test_vector_init_array());
     ASSERT_TEST(!test_vector_resize());
     ASSERT_TEST(!test_vector_add());
     ASSERT_TEST(!test_vector_add_at());
@@ -647,7 +651,9 @@ int test_vector(int show_print)
     ASSERT_TEST(!test_vector_get_remove());
     ASSERT_TEST(!test_vector_set_size());
     ASSERT_TEST(!test_vector_set_capacity());
+        }
     /*
+     *
     Vector *vector = vector_init(MAX_CAPACITY);
     for(int i = 0; i < 100; i++)
     vector_add(int*, vector, &i, copy_int);

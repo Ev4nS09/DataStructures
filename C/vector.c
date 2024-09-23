@@ -130,6 +130,7 @@ int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value,
         return 1; 
 
     void* temp_value = vector->array[index];
+    vector->array[index] = COPY(copy_value, value);
     if(free_value)
         free_value(temp_value);
 

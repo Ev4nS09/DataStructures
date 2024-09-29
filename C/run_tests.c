@@ -3,6 +3,7 @@
 #include "vector_tests.h"
 #include "vector.h"
 #include "tests_util.h"
+#include "my_error.h"
 
 #define BOLD_ON "\e[1m"
 #define BOLD_OFF "\e[m"
@@ -22,18 +23,20 @@ void *copy_int2(void *integer) {
 
 void free_int2(void *integer) { free((int *)integer); }
 
-int main(int argc, char* argv[])
+int main()
 {
-    Vector* v = vector_init_empty();
+    Vector* v = vector_init(128, sizeof(int));
 
-    //for(int i = 0; i < 10000000; i++)
-        //vector_add(int*, v, copy_int2(&i));
-    //vector_add(int, v, i);
+    for(int i = 0; i < 32; i++)
+        vector_add(v, i);
+
+    int y =  _vector_get_remove(int, v, 5);
+
+    printf("%d %d", y, vector_get(int, v, 5));
 
     vector_destroy(v, NULL);
-    
 
-    test_vector(((int) argv[1][0]) - '0');
+    //test_vector(((int) argv[1][0]) - '0');
 
     if(NUM_OF_ERRORS == 0)
         printf(GREEN_ON " All Tests Passed.\n" COLOR_OFF);

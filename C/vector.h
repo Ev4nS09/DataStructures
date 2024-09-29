@@ -1,15 +1,27 @@
 #ifndef vector_h
 #define vector_h
 
+#include <stdlib.h>
 #include <limits.h>
 #include "generic_type_functions.h"
 
 #define MIN_CAPACITY 16
 #define MAX_CAPACITY (UINT_MAX >> 3)
 
-#define vector_add(type, vector, value) (!_vector_add(vector) ? (*(((type*) vector->array) + vector->size - 1) = value) : (0))
-#define vector_get(type, vector, index) (_vector_get(vector, index, NULL) ? (*(((type*) vector->array) + index)) : (0))
-#define _vector_set(type, vector, value, index, free) (!vector_set(vector, NULL, index, NULL, free) ? (*(((type*)vector->array) + index) = value) : (0))
+#define vector_add(vector, value) \
+(!_vector_add(vector) ? (*(((typeof(value)*) vector->array) + vector->size - 1) = value) : (0))
+
+#define vector_get(type, vector, index) \
+(_vector_get(vector, index) ? (*(((type*) vector->array) + index)) : (0))
+
+#define vector_set(vector, value, index) \
+(!_vector_set(vector, index, NULL) ? (*(((typeof(value)*)vector->array) + index) = value) : (0))
+
+#define vector_set_free(vector, value, index, free) \
+(!_vector_set(vector, index, free) ? (*(((typeof(value)*)vector->array) + index) = value) : (0))
+
+#define _vector_get_remove(type, vector, index) \
+       (type) vector_get_remove(vector, index, sizeof(type)) 
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.
@@ -23,9 +35,10 @@
 */
 typedef struct Vector
 {
-  void** array;
-  unsigned int capacity;
-  unsigned int size;
+    void** array;
+    unsigned int capacity;
+    unsigned int size;
+    size_t type_size;
 }Vector;
 
 /*
@@ -36,7 +49,7 @@ typedef struct Vector
 
   Free: fucntion pointer to free the values that are going to be stored in the array
 */
-Vector* vector_init_empty();
+Vector* vector_init_empty(size_t type_size);
 
 /*
   Initializes a vector with an initial capicity given by the user.
@@ -46,9 +59,9 @@ Vector* vector_init_empty();
   Size: is set to 0
   Free: fucntion pointer to free the values that are going to be stored in the array
 */
-Vector* vector_init(unsigned int initial_capacity);
+Vector* vector_init(unsigned int initial_capacity, size_t type_size);
 
-Vector* vector_init_array(void** array, unsigned int array_size, unsigned int array_capacity);
+Vector* vector_init_array(void** array, unsigned int array_size, unsigned int array_capacity, size_t type_size);
 
 Vector* vector_copy(Vector* vector, Copy copy_value);
 
@@ -69,7 +82,7 @@ int _vector_add(Vector* vector);
 /*
   Sets a value from the array for another one at a given index
 */
-int vector_set(Vector* vector, void* value, unsigned int index, Copy copy_value, Free free_value);
+int _vector_set(Vector* vector, unsigned int index, Free free_value); 
 
 /*
 Adds an element to a vector like the fucntion 'vector_add' at a given position
@@ -79,7 +92,7 @@ int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_val
 /*
   Removes an element from the vector at a given position, and it frees the value that was stored
 */
-int vector_remove(Vector* vector, unsigned int index, Free free_value);
+int vector_remove(Vector* vector, unsigned int index, size_t type_size, Free free_value);
 
 /*
   Removes a chunk of elements from an index 'from' to an index 'to' inclusive
@@ -89,9 +102,9 @@ int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to, Fr
 /*
   Return the value at the position given from the vector
 */
-void* _vector_get(Vector* vector, unsigned int index, Copy copy_value);
+void* _vector_get(Vector* vector, unsigned int index);
 
-void* vector_get_remove(Vector* vector, unsigned int index, Copy copy_value, Free free_value);
+void** vector_get_remove(Vector* vector, unsigned int index, size_t type_size);
 
 /*
   Sets the size of the array to the given one. If the the new size is less than the previous one 

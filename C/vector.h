@@ -35,10 +35,10 @@
 */
 typedef struct Vector
 {
-    void** array;
     unsigned int capacity;
     unsigned int size;
     size_t type_size;
+    void** array;
 }Vector;
 
 /*

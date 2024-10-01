@@ -30,9 +30,14 @@ int main()
     for(int i = 0; i < 32; i++)
         vector_add(v, i);
 
-    int y =  _vector_get_remove(int, v, 5);
+    printf("%d\n", vector_add(v, 24342));
+    printf("%d\n", *(int*) v);
 
-    printf("%d %d", y, vector_get(int, v, 5));
+    printf("%p %p %p %p %p %p\n", v, v+1, &v->capacity, &v->size, &v->type_size, &v->array);
+    
+
+
+
 
     vector_destroy(v, NULL);
 

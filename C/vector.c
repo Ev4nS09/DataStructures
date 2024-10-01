@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <error.h>
+#include <errno.h>
 
 #include "vector.h"
 #include "my_error.h"
@@ -119,8 +120,8 @@ int _vector_add(Vector* vector)
 {
   if(vector->size == MAX_CAPACITY)
   {
-    my_error_set(INVALID_VALUE);  
-    return 1;
+    errno = EFAULT;
+    return errno;
   }
 
   if(vector->size >= vector->capacity)

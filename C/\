@@ -26,14 +26,9 @@
 #include "vector.h"
 #include "generic_type_functions.h"
 
-#define get(vector, index) (&((char*)vector->array)[(index) * vector->type_size])
+#define get(vector, index) (&((char*)vector->array)[index * vector->type_size])
 #define min(a, b) (a > b ? b : a)
 #define max(a, b) (a > b ? a : b)
-
-unsigned int maxf(unsigned int a, unsigned int b)
-{
-    return (a > b ? a : b);
-}
 
 
 Vector* vector_init_empty(size_t type_size)
@@ -55,7 +50,7 @@ Vector* vector_init(unsigned int initial_capacity, size_t type_size)
     
   Vector* result = malloc(sizeof(Vector));
   result->capacity = max(initial_capacity, MIN_CAPACITY);
-  result->array = calloc(result->capacity, type_size);
+  result->array = calloc(initial_capacity, type_size);
   result->size = 0;
   result->type_size = type_size;
  
@@ -96,12 +91,12 @@ Vector* vector_copy(Vector* vector, Copy copy_value)
   Vector* result = malloc(sizeof(Vector));
 
   result->array = calloc(vector->capacity, vector->type_size); 
+
+  for(int i = 0; i < vector->size; i++)
+    result->array[i] = COPY(copy_value, vector->array[i]);
+
   result->size = vector->size;
   result->capacity = vector->capacity;
-  result->type_size = vector->type_size;
-
-  for(int i = 0; i < result->size && copy_value; i++)
-    result->array[i] = copy_value(get(vector, i));
 
   return result;
 }
@@ -282,10 +277,10 @@ void vector_print(Vector* vector, Print print_value)
         print_value(get(vector, i));
       printf(", ");
     }
-    if(get(vector, vector->size-1) == NULL)
+    if(get(vector, i) == NULL)
       printf("NULL");
     else
-      print_value(get(vector, vector->size-1));
+      print_value(vector->array + (vector->size-1));
     printf("]\n");
   }
   

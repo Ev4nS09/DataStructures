@@ -21,25 +21,32 @@ void *copy_int2(void *integer) {
   return result;
 }
 
+void print_int(void* v)
+{
+    printf("%d", (*(int*) v));
+}
+
 void free_int2(void *integer) { free((int *)integer); }
 
 int main()
 {
-    Vector* v = vector_init(128, sizeof(int));
+   //while(1){ 
+    Vector* v = vector_init(1, sizeof(int));
+    printf("%d\n", v->capacity);
+    Vector* vc;
 
     for(int i = 0; i < 32; i++)
         vector_add(v, i);
 
-    printf("%d\n", vector_add(v, 24342));
-    printf("%d\n", *(int*) v);
+    _vector_copy(int, v, vc, NULL);
 
-    printf("%p %p %p %p %p %p\n", v, v+1, &v->capacity, &v->size, &v->type_size, &v->array);
-    
-
-
+    vector_print(v, print_int);
+    vector_print(vc, print_int);
 
 
     vector_destroy(v, NULL);
+    vector_destroy(vc, NULL);
+    //}
 
     //test_vector(((int) argv[1][0]) - '0');
 

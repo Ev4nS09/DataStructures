@@ -8,20 +8,35 @@
 #define MIN_CAPACITY 16
 #define MAX_CAPACITY (UINT_MAX >> 3)
 
+#define getp(type, vector, index) ((((type*) vector->array)[index]))
+
 #define vector_add(vector, value) \
-(!_vector_add(vector) ? (*(((typeof(value)*) vector->array) + vector->size - 1) = value) : (0))
+(!_vector_add(vector) ? (getp(typeof(value), vector, vector->size - 1) = value) : (0))
 
 #define vector_get(type, vector, index) \
-(_vector_get(vector, index) ? (*(((type*) vector->array) + index)) : (0))
+(_vector_get(vector, index) ? getp(type, vector, index) : (0))
 
 #define vector_set(vector, value, index) \
-(!_vector_set(vector, index, NULL) ? (*(((typeof(value)*)vector->array) + index) = value) : (0))
+(!_vector_set(vector, index, NULL) ? getp(typeof(value), vector, index) = value : (0))
 
 #define vector_set_free(vector, value, index, free) \
-(!_vector_set(vector, index, free) ? (*(((typeof(value)*)vector->array) + index) = value) : (0))
+(!_vector_set(vector, index, free) ? getp(typeof(value), vector, index) = value : (0))
 
 #define _vector_get_remove(type, vector, index) \
        (type) vector_get_remove(vector, index, sizeof(type)) 
+
+#define copyv(type, original, copy) \
+    for(int i = 0; i < copy->size; i++) {\
+        getp(type, copy, i) = getp(type, original, i);}
+
+#define _vector_copy(type, original, copy, copy_value) \
+    if((copy = vector_copy(original, copy_value)) && copy_value == NULL){\
+        copyv(type, original, copy)}\
+    else {\
+        vector_destroy(copy, NULL);}
+        
+        
+        
 
 /*
   A vector is just a struct that stores an array, it's size, and it's capicity.

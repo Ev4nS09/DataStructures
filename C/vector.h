@@ -22,8 +22,8 @@
 #define vector_set_free(vector, value, index, free) \
 (!_vector_set(vector, index, free) ? getp(typeof(value), vector, index) = value : (0))
 
-#define _vector_get_remove(type, vector, index) \
-       (type) vector_get_remove(vector, index, sizeof(type)) 
+#define _vector_get_remove(type, vector, index, free_value) \
+       (vector_get(type, vector, index)); vector_remove(vector, index, free_value) 
 
 #define copyv(type, original, copy) \
     for(int i = 0; i < copy->size; i++) {\
@@ -32,8 +32,6 @@
 #define _vector_copy(type, original, copy, copy_value) \
     if((copy = vector_copy(original, copy_value)) && copy_value == NULL){\
         copyv(type, original, copy)}\
-    else {\
-        vector_destroy(copy, NULL);}
         
         
         
@@ -107,7 +105,7 @@ int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_val
 /*
   Removes an element from the vector at a given position, and it frees the value that was stored
 */
-int vector_remove(Vector* vector, unsigned int index, size_t type_size, Free free_value);
+int vector_remove(Vector* vector, unsigned int index, Free free_value);
 
 /*
   Removes a chunk of elements from an index 'from' to an index 'to' inclusive
@@ -119,7 +117,7 @@ int vector_remove_from_to(Vector* vector, unsigned int from, unsigned int to, Fr
 */
 void* _vector_get(Vector* vector, unsigned int index);
 
-void** vector_get_remove(Vector* vector, unsigned int index, size_t type_size);
+void** vector_get_remove(Vector* vector, unsigned int index);
 
 /*
   Sets the size of the array to the given one. If the the new size is less than the previous one 

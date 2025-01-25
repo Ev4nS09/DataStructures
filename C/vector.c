@@ -1,15 +1,3 @@
-/*
-  Author: Afonso Rio Soares da Silva
-  Version: 1.0
-  Date: 24/04/2024
-
-  THe code below implements a generic type vector in C, so it uses an array of pointers to the values you add
-  to that array.
-
-  REMINDER: THE CODE WILL NOT STOP YOU FROM USING ALL THE MEMORY YOU HAVE ON YOUR PC, SO USE IT WISELY AND AT YOUR
-  OWN RISK!!
-*/
-
 #ifdef __linux__
   #include <linux/limits.h>
 #elif _WIN32
@@ -29,11 +17,6 @@
 #define get(vector, index) (&((char*)vector->array)[(index) * vector->type_size])
 #define min(a, b) (a > b ? b : a)
 #define max(a, b) (a > b ? a : b)
-
-unsigned int maxf(unsigned int a, unsigned int b)
-{
-    return (a > b ? a : b);
-}
 
 
 Vector* vector_init_empty(size_t type_size)
@@ -169,14 +152,14 @@ int vector_add_at(Vector* vector, void* value, unsigned int index, Copy copy_val
   return 0;
 }
 
-int vector_remove(Vector* vector, unsigned int index, size_t type_size, Free free_value)
+int vector_remove(Vector* vector, unsigned int index, Free free_value)
 {
   if(index >= vector->size)
     return 1;
 
   
   //vector_set_free(vector, NULL, index, free_value);
-  memmove(get(vector, index), get(vector, index+1), (vector->size - (index+1)) * type_size);
+  memmove(get(vector, index), get(vector, index+1), (vector->size - (index+1)) * vector->type_size);
 
   vector->size = vector->size - 1;
 
@@ -219,13 +202,13 @@ void* _vector_get(Vector* vector, unsigned int index)
   return vector->array;
 }
 
-void** vector_get_remove(Vector* vector, unsigned int index, size_t type_size)
+void** vector_get_remove(Vector* vector, unsigned int index)
 {
   if(!vector || index >= vector->size)
     return NULL;
 
-  void* result = *((void**)((long long) vector->array + (index * type_size)));
-  vector_remove(vector, index, type_size, NULL);
+  void* result = get(vector, index);
+  vector_remove(vector, index, NULL);
 
   return result;
 }

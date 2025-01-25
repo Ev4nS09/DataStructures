@@ -30,25 +30,36 @@ void free_int2(void *integer) { free((int *)integer); }
 
 int main()
 {
+
+    double* f = malloc(sizeof(double));
+
+    int x = 1;
+    double y = 2.1;
+
+    ((int*) f)[0] = x;  
+    ((int*) f)[1] = y;  
+
+    printf("%d %lf\n", ((int*) f)[0], *((double*)(((int*) f) + 1)));
+
    //while(1){ 
     Vector* v = vector_init(1, sizeof(int));
     printf("%d\n", v->capacity);
-    Vector* vc;
 
     for(int i = 0; i < 32; i++)
         vector_add(v, i);
 
-    _vector_copy(int, v, vc, NULL);
+
+    int t = _vector_get_remove(int, v, 6, NULL);
 
     vector_print(v, print_int);
-    vector_print(vc, print_int);
+    printf("%d\n", t);
 
 
     vector_destroy(v, NULL);
-    vector_destroy(vc, NULL);
     //}
 
     //test_vector(((int) argv[1][0]) - '0');
+    //
 
     if(NUM_OF_ERRORS == 0)
         printf(GREEN_ON " All Tests Passed.\n" COLOR_OFF);
